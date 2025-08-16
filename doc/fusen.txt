@@ -1,0 +1,269 @@
+*fusen.txt*    Sticky note bookmarks for Neovim with git branch awareness
+
+==============================================================================
+CONTENTS                                                      *fusen-contents*
+
+    1. Introduction ............................................. |fusen-intro|
+    2. Installation ............................................ |fusen-install|
+    3. Configuration ............................................ |fusen-config|
+    4. Usage ..................................................... |fusen-usage|
+    5. Commands ............................................... |fusen-commands|
+    6. Mappings ............................................... |fusen-mappings|
+    7. Functions .............................................. |fusen-functions|
+    8. Telescope .............................................. |fusen-telescope|
+
+==============================================================================
+INTRODUCTION                                                     *fusen-intro*
+
+fusen.nvim is a sticky note bookmarks plugin for Neovim with git branch
+awareness. It allows you to place sticky notes (fusen) in your code
+and keep them organized across different git branches.
+
+Key features:
+- Simple sticky notes with annotations
+- Git branch awareness - bookmarks are stored per git branch
+- Persistent storage between sessions
+- Floating window display for annotations
+- Telescope integration for searching
+- Fast navigation between bookmarks
+- Quickfix list support
+
+==============================================================================
+INSTALLATION                                                   *fusen-install*
+
+Using lazy.nvim: >lua
+    {
+      "walkersumida/fusen.nvim",
+      config = function()
+        require("fusen").setup()
+      end
+    }
+<
+
+Using packer.nvim: >lua
+    use {
+      "walkersumida/fusen.nvim",
+      config = function()
+        require("fusen").setup()
+      end
+    }
+<
+
+==============================================================================
+CONFIGURATION                                                   *fusen-config*
+
+Setup function: >lua
+    require("fusen").setup({
+      -- Configuration options
+    })
+<
+
+Default configuration: >lua
+    {
+      save_file = vim.fn.stdpath("data") .. "/fusen_marks.json",
+      
+      mark = {
+        icon = "📝",
+        hl_group = "FusenMark",
+      },
+      
+      keymaps = {
+        toggle_mark = "fm",
+        add_mark = "mi",
+        clear_mark = "mc",
+        clear_buffer = "mC",
+        clear_all = "mD",
+        next_mark = "mn",
+        prev_mark = "mp",
+        list_marks = "ml",
+      },
+      
+      branch_aware = true,
+      auto_save = true,
+      sign_priority = 10,
+      
+      annotation_display = {
+        mode = "float", -- "eol", "float", "both", "none"
+        prefix = " 📝 ",
+        
+        float = {
+          delay = 500,
+          border = "rounded",
+          max_width = 50,
+          max_height = 10,
+        },
+      },
+    }
+<
+
+Configuration options:
+
+`save_file`                                                 *fusen-opt-save_file*
+    Path where marks are saved. Default: stdpath("data") .. "/fusen_marks.json"
+
+`mark`                                                           *fusen-opt-mark*
+    Table defining mark appearance with icon, sign text, and highlight group.
+
+`keymaps`                                                     *fusen-opt-keymaps*
+    Table of key mappings.
+
+`branch_aware`                                           *fusen-opt-branch_aware*
+    Store bookmarks per git branch. Default: true
+
+`auto_save`                                                 *fusen-opt-auto_save*
+    Automatically save marks on buffer leave. Default: true
+
+`sign_priority`                                         *fusen-opt-sign_priority*
+    Priority for sign column marks. Default: 10
+
+`annotation_display`                                *fusen-opt-annotation_display*
+    Settings for annotation display.
+    
+    `mode`                                          *fusen-opt-annotation_display-mode*
+        Display mode for annotations:
+        - "eol": Show at end of line
+        - "float": Show in floating window on hover
+        - "both": Show both eol and float
+        - "none": Hide annotations
+    
+    `float`                                         *fusen-opt-annotation_display-float*
+        Floating window settings:
+        - delay: Time before showing float (ms)
+        - border: Border style
+        - max_width: Maximum window width
+        - max_height: Maximum window height
+
+==============================================================================
+USAGE                                                           *fusen-usage*
+
+Basic workflow:
+
+1. Navigate to a line in your code
+2. Press `fm` to toggle a sticky note
+3. Press `mi` to add a mark with annotation
+4. Press `mn` or `mp` to navigate between marks
+5. Press `ml` to see all marks in quickfix list
+
+Git branch awareness:
+When you switch git branches, your sticky notes automatically switch too.
+Each branch maintains its own set of bookmarks.
+
+Virtual text display modes:
+The plugin supports multiple ways to display annotations:
+- End of line (traditional)
+- Floating windows (on cursor hover)
+- Both simultaneously
+- Hidden (marks only)
+
+==============================================================================
+COMMANDS                                                     *fusen-commands*
+
+:FusenToggle                                                   *:FusenToggle*
+    Toggle sticky note at current line.
+
+:FusenAnnotate                                               *:FusenAnnotate*
+    Add or edit annotation for sticky note at current line.
+
+:FusenClearBuffer                                         *:FusenClearBuffer*
+    Clear all sticky notes in current buffer.
+
+:FusenClearAll                                               *:FusenClearAll*
+    Clear all sticky notes in project.
+
+:FusenNext                                                       *:FusenNext*
+    Jump to next sticky note in buffer.
+
+:FusenPrev                                                       *:FusenPrev*
+    Jump to previous sticky note in buffer.
+
+:FusenList                                                       *:FusenList*
+    Show all sticky notes in quickfix list.
+
+:FusenRefresh                                                 *:FusenRefresh*
+    Refresh display of all sticky notes.
+
+:FusenSave                                                       *:FusenSave*
+    Manually save sticky notes to file.
+
+:FusenLoad                                                       *:FusenLoad*
+    Manually load sticky notes from file.
+
+:FusenInfo                                                       *:FusenInfo*
+    Show information about sticky note at current line.
+
+:FusenBranch                                                   *:FusenBranch*
+    Show current git branch information.
+
+==============================================================================
+MAPPINGS                                                     *fusen-mappings*
+
+Default mappings:
+
+`mi`                                                     *fusen-map-add-mark*
+    Add or edit mark with annotation at current line.
+
+`mc`                                                        *fusen-map-clear*
+    Clear mark at current line.
+
+`mC`                                                  *fusen-map-clear-buffer*
+    Clear all marks in current buffer.
+
+`mD`                                                     *fusen-map-clear-all*
+    Clear all marks in project.
+
+`mn`                                                          *fusen-map-next*
+    Jump to next mark.
+
+`mp`                                                          *fusen-map-prev*
+    Jump to previous mark.
+
+`ml`                                                          *fusen-map-list*
+    Show marks in quickfix list.
+
+==============================================================================
+FUNCTIONS                                                   *fusen-functions*
+
+require("fusen").setup({opts})                               *fusen.setup()*
+    Initialize fusen with configuration options.
+
+require("fusen").toggle_mark()                          *fusen.toggle_mark()*
+    Toggle sticky note at current line.
+
+require("fusen").add_annotation()                    *fusen.add_annotation()*
+    Add or edit annotation for current line.
+
+require("fusen").clear_buffer()                        *fusen.clear_buffer()*
+    Clear all marks in current buffer.
+
+require("fusen").clear_all()                              *fusen.clear_all()*
+    Clear all marks in project.
+
+require("fusen").next_mark()                              *fusen.next_mark()*
+    Jump to next mark in buffer.
+
+require("fusen").prev_mark()                              *fusen.prev_mark()*
+    Jump to previous mark in buffer.
+
+require("fusen").list_marks()                            *fusen.list_marks()*
+    Show all marks in quickfix list.
+
+require("fusen").refresh_marks()                      *fusen.refresh_marks()*
+    Refresh display of all marks.
+
+==============================================================================
+TELESCOPE                                                   *fusen-telescope*
+
+If telescope.nvim is installed, you can use: >
+    :Telescope fusen marks
+<
+
+Or in Lua: >lua
+    require("telescope").extensions.fusen.marks()
+<
+
+Telescope mappings:
+- `<CR>`: Jump to selected mark
+- `<C-d>`: Delete selected mark
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
