@@ -196,6 +196,36 @@ function M.get_marks(bufnr)
     return result
   end
 
+  -- Get all marks from saved data (file-based, not buffer-dependent)
+  local function get_all_marks_from_data()
+    local all_marks = {}
+    local branch = current_branch or git.get_current_branch()
+    local branch_key = get_mark_key(nil, branch)
+
+    for file_path, branch_data in pairs(file_marks_data) do
+      if branch_data[branch_key] then
+        for _, mark_data in ipairs(branch_data[branch_key]) do
+          table.insert(
+            all_marks,
+            vim.tbl_extend("force", mark_data, {
+              file = file_path,
+            })
+          )
+        end
+      end
+    end
+
+    -- Sort by file path and line number
+    table.sort(all_marks, function(a, b)
+      if a.file == b.file then
+        return a.line < b.line
+      end
+      return a.file < b.file
+    end)
+
+    return all_marks
+  end
+
   -- Get all marks across all buffers for current branch
   local all_marks = {}
   local branch = current_branch or git.get_current_branch()
@@ -226,6 +256,11 @@ function M.get_marks(bufnr)
         end
       end
     end
+  end
+
+  -- If no marks found from loaded buffers, try to get from saved data
+  if #all_marks == 0 then
+    return get_all_marks_from_data()
   end
 
   return all_marks
