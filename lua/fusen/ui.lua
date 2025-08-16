@@ -94,7 +94,9 @@ local function show_float_window(annotation, opts)
   local col = 0 -- Same column as cursor
 
   -- Adjust if window would go off screen
-  if cursor[1] + height + 2 > win_height then
+  -- Calculate available space below cursor in window
+  local cursor_row_in_window = cursor[1] - vim.fn.line('w0') + 1
+  if height + 2 > win_height - cursor_row_in_window then
     row = -height - 1 -- Show above cursor instead
   end
 
