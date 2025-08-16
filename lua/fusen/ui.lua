@@ -135,10 +135,14 @@ function M.refresh_buffer(bufnr)
     return
   end
 
+  local marks = require("fusen.marks")
+  
+  -- Sync extmark positions with data before refreshing
+  marks.sync_extmark_positions(bufnr)
+
   M.clear_buffer(bufnr)
 
-  local marks = require("fusen.marks")
-  local file_marks = marks.get_marks(bufnr) -- Now uses bufnr instead of file_path
+  local file_marks = marks.get_buffer_marks(bufnr)
   local config = require("fusen.config").get()
 
   for _, mark in ipairs(file_marks) do
