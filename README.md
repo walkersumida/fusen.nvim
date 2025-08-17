@@ -6,6 +6,25 @@ A sticky note bookmarks plugin for Neovim with git branch awareness. Place stick
 ![Lua](https://img.shields.io/badge/Lua-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
+<table>
+  <tr>
+    <th>Adding/Editing an annotation</th>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://github.com/user-attachments/assets/038bbff6-643a-4e87-aa28-73735a7de0e4" />
+    </td>
+  </tr>
+  <tr>
+    <th>Viewing annotation on hover</th>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://github.com/user-attachments/assets/92c27b03-4ea0-426c-bf2c-ba8cbabbad83" />
+    </td>
+  </tr>
+</table>
+
 ## ✨ Features
 
 - 📝 **Simple sticky notes** - Clean and minimalist bookmark system
