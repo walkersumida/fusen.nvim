@@ -9,7 +9,7 @@ M.defaults = {
   },
 
   keymaps = {
-    add_mark = "mi",
+    add_mark = "me",
     clear_mark = "mc",
     clear_buffer = "mC",
     clear_all = "mD",

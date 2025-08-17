@@ -69,7 +69,7 @@ Default configuration: >lua
       
       keymaps = {
         toggle_mark = "fm",
-        add_mark = "mi",
+        add_mark = "me",
         clear_mark = "mc",
         clear_buffer = "mC",
         clear_all = "mD",
@@ -140,7 +140,7 @@ Basic workflow:
 
 1. Navigate to a line in your code
 2. Press `fm` to toggle a sticky note
-3. Press `mi` to add a mark with annotation
+3. Press `me` to add a mark with annotation
 4. Press `mn` or `mp` to navigate between marks
 5. Press `ml` to see all marks in quickfix list
 
@@ -199,7 +199,7 @@ MAPPINGS                                                     *fusen-mappings*
 
 Default mappings:
 
-`mi`                                                     *fusen-map-add-mark*
+`me`                                                     *fusen-map-add-mark*
     Add or edit mark with annotation at current line.
 
 `mc`                                                        *fusen-map-clear*

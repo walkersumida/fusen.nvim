@@ -83,7 +83,7 @@ require("fusen").setup({
   
   -- Key mappings
   keymaps = {
-    add_mark = "mi",        -- Add/edit sticky note
+    add_mark = "me",        -- Add/edit sticky note
     clear_mark = "mc",      -- Clear mark at current line
     clear_buffer = "mC",    -- Clear all marks in buffer
     clear_all = "mD",       -- Clear ALL marks (deletes entire JSON content)
@@ -154,7 +154,7 @@ All default mappings start with `m` prefix for consistency:
 
 | Key | Description |
 |-----|-------------|
-| `mi` | Add or edit sticky note with annotation |
+| `me` | Add or edit sticky note with annotation |
 | `mc` | Clear sticky note at current line |
 | `mC` | Clear all sticky notes in current buffer |
 | `mD` | Clear ALL sticky notes (deletes entire JSON content) |
