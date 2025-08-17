@@ -38,7 +38,7 @@ local function confirm_action(message)
 
     -- Adjust if window would go off screen
     -- Calculate available space below cursor in window
-    local cursor_row_in_window = cursor[1] - vim.fn.line('w0') + 1
+    local cursor_row_in_window = cursor[1] - vim.fn.line("w0") + 1
     if height + 2 > win_height - cursor_row_in_window then
       row = -height - 1 -- Show above cursor instead
     end
@@ -238,31 +238,76 @@ function M.refresh_marks()
   ui.refresh_all_buffers()
 end
 
-function M.setup_keymaps()
-  local opts = { noremap = true, silent = true }
+-- Check if buffer should be excluded from keymaps
+local function should_exclude_buffer(bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
+  local exclude_filetypes = config.get().exclude_filetypes
+
+  if not exclude_filetypes or #exclude_filetypes == 0 then
+    return false
+  end
+
+  local filetype = vim.bo[bufnr].filetype
+  return vim.tbl_contains(exclude_filetypes, filetype)
+end
+
+-- Setup keymaps for a specific buffer
+local function setup_buffer_keymaps(bufnr)
+  if should_exclude_buffer(bufnr) then
+    return -- Don't register keymaps for excluded buffers
+  end
+
+  local opts = { noremap = true, silent = true, buffer = bufnr }
   local keymaps = config.get().keymaps
 
-  vim.keymap.set("n", keymaps.add_mark, function()
-    M.add_mark()
-  end, opts)
-  vim.keymap.set("n", keymaps.clear_mark, function()
-    M.clear_mark()
-  end, opts)
-  vim.keymap.set("n", keymaps.clear_buffer, function()
-    M.clear_buffer()
-  end, opts)
-  vim.keymap.set("n", keymaps.clear_all, function()
-    M.clear_all()
-  end, opts)
-  vim.keymap.set("n", keymaps.next_mark, function()
-    M.next_mark()
-  end, opts)
-  vim.keymap.set("n", keymaps.prev_mark, function()
-    M.prev_mark()
-  end, opts)
-  vim.keymap.set("n", keymaps.list_marks, function()
-    M.list_marks()
-  end, opts)
+  vim.keymap.set("n", keymaps.add_mark, M.add_mark, opts)
+  vim.keymap.set("n", keymaps.clear_mark, M.clear_mark, opts)
+  vim.keymap.set("n", keymaps.clear_buffer, M.clear_buffer, opts)
+  vim.keymap.set("n", keymaps.clear_all, M.clear_all, opts)
+  vim.keymap.set("n", keymaps.next_mark, M.next_mark, opts)
+  vim.keymap.set("n", keymaps.prev_mark, M.prev_mark, opts)
+  vim.keymap.set("n", keymaps.list_marks, M.list_marks, opts)
+end
+
+function M.setup_keymaps()
+  -- Apply keymaps to existing buffers
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(bufnr) then
+      setup_buffer_keymaps(bufnr)
+    end
+  end
+
+  local group = vim.api.nvim_create_augroup("FusenKeymaps", { clear = true })
+
+  -- Auto-apply keymaps on buffer enter (with delay for filetype detection)
+  vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+    group = group,
+    callback = function(args)
+      -- Small delay to ensure filetype is set
+      vim.defer_fn(function()
+        if vim.api.nvim_buf_is_valid(args.buf) then
+          setup_buffer_keymaps(args.buf)
+        end
+      end, 10)
+    end,
+  })
+
+  -- Handle FileType changes to ensure exclusions work
+  vim.api.nvim_create_autocmd("FileType", {
+    group = group,
+    pattern = "*",
+    callback = function(args)
+      if should_exclude_buffer(args.buf) then
+        -- Remove existing keymaps for excluded filetypes
+        local keymaps = config.get().keymaps
+        for _, key in pairs(keymaps) do
+          pcall(vim.keymap.del, "n", key, { buffer = args.buf })
+        end
+      else
+        setup_buffer_keymaps(args.buf)
+      end
+    end,
+  })
 end
 
 function M.setup_commands()

@@ -35,6 +35,8 @@ M.defaults = {
       max_height = 10,
     },
   },
+
+  exclude_filetypes = {},
 }
 
 M.options = {}

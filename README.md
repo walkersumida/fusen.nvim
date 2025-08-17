@@ -114,6 +114,11 @@ require("fusen").setup({
       max_height = 10,
     },
   },
+  
+  -- Exclude specific filetypes from keymaps
+  exclude_filetypes = {
+    "nerdtree", -- NERDTree
+  },
 })
 ```
 
