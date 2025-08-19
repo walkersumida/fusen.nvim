@@ -136,7 +136,9 @@ require("fusen").setup({
   
   -- Exclude specific filetypes from keymaps
   exclude_filetypes = {
-    "nerdtree", -- NERDTree
+    -- "neo-tree",     -- Example: neo-tree
+    -- "NvimTree",     -- Example: nvim-tree
+    -- "nerdtree",     -- Example: NERDTree
   },
 })
 ```
