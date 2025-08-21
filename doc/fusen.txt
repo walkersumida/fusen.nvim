@@ -84,7 +84,6 @@ Default configuration: >lua
       
       annotation_display = {
         mode = "float", -- "eol", "float", "both", "none"
-        prefix = " 📝 ",
         
         float = {
           delay = 500,

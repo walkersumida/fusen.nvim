@@ -123,7 +123,6 @@ require("fusen").setup({
   -- Annotation display settings
   annotation_display = {
     mode = "float", -- "eol", "float", "both", "none"
-    prefix = " 📝 ",
     
     -- Float window settings
     float = {

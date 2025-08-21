@@ -26,7 +26,6 @@ M.defaults = {
 
   annotation_display = {
     mode = "float", -- "eol", "float", "both", "none"
-    prefix = " 📝 ",
 
     float = {
       delay = 100,

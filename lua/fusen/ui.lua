@@ -49,8 +49,7 @@ local function show_float_window(annotation, opts)
   float_buf = vim.api.nvim_create_buf(false, true)
 
   -- Format the annotation text
-  local prefix = config.annotation_display.prefix or ""
-  local full_text = prefix .. annotation
+  local full_text = annotation
   local lines = vim.split(full_text, "\n", { plain = true })
 
   vim.api.nvim_buf_set_lines(float_buf, 0, -1, false, lines)
@@ -156,7 +155,7 @@ function M.refresh_buffer(bufnr)
 
       if mode == "eol" or mode == "both" then
         local virt_text = {
-          { config.annotation_display.prefix .. mark.annotation, config.mark.hl_group },
+          { mark.annotation, config.mark.hl_group },
         }
 
         pcall(vim.api.nvim_buf_set_extmark, bufnr, namespace, mark.line - 1, 0, {
