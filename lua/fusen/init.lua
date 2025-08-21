@@ -46,7 +46,7 @@ local function confirm_action(message)
     end
 
     if cursor[2] + width > win_width then
-      col = win_width - width - cursor[2] -- Shift left to fit
+      col = math.max(0, win_width - width - cursor[2]) -- Ensure non-negative value
     end
 
     -- Create float window
