@@ -24,7 +24,9 @@ end
 -- Helper function for confirmation with float window + immediate key input
 local function confirm_action(message)
   local ok, result = pcall(function()
-    local width = math.min(60, #message + 4)
+    -- Use strdisplaywidth for accurate display width calculation
+    local display_width = vim.fn.strdisplaywidth(message)
+    local width = math.min(60, display_width + 4)
     local height = 3
 
     -- Get cursor position and window dimensions
@@ -44,7 +46,7 @@ local function confirm_action(message)
     end
 
     if cursor[2] + width > win_width then
-      col = win_width - width - cursor[2] -- Shift left to fit
+      col = math.max(0, win_width - width - cursor[2]) -- Ensure non-negative value
     end
 
     -- Create float window

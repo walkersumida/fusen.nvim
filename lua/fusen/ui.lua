@@ -43,83 +43,79 @@ local function show_float_window(annotation, opts)
   end
 
   local config = require("fusen.config").get()
-  local float_config = config.annotation_display.float
+  local float_config = config.annotation_display.float or {}
 
-  -- Create buffer for float window
+  -- Create buffer for the floating window
   float_buf = vim.api.nvim_create_buf(false, true)
 
   -- Format the annotation text
-  local lines = {}
-  local max_width = float_config.max_width or 50
-  local prefix = config.annotation_display.prefix or " 📝 "
-
-  -- Split long annotations into multiple lines
-  local text = prefix .. annotation
-  while #text > max_width do
-    local split_pos = max_width
-    for i = max_width, 1, -1 do
-      if text:sub(i, i):match("[%s%p]") then
-        split_pos = i
-        break
-      end
-    end
-    table.insert(lines, text:sub(1, split_pos))
-    text = "  " .. text:sub(split_pos + 1)
-  end
-  table.insert(lines, text)
-
-  -- Limit height
-  local max_height = float_config.max_height or 10
-  if #lines > max_height then
-    lines = vim.list_slice(lines, 1, max_height)
-    lines[#lines] = lines[#lines] .. "..."
-  end
+  local full_text = annotation
+  local lines = vim.split(full_text, "\n", { plain = true })
 
   vim.api.nvim_buf_set_lines(float_buf, 0, -1, false, lines)
 
-  -- Calculate window size
-  local width = 0
+  --  Size calculation
+  local max_width = float_config.max_width or 50
+  local min_width = float_config.min_width or 1
+  local max_height = float_config.max_height or 10
+  local min_height = float_config.min_height or 1
+
+  -- Calculate the longest display width among all lines
+  local longest = 1
   for _, line in ipairs(lines) do
-    width = math.max(width, vim.fn.strdisplaywidth(line))
-  end
-  local height = #lines
-
-  -- Get cursor position and window dimensions (same as confirm_action)
-  local cursor = vim.api.nvim_win_get_cursor(0)
-  local win_height = vim.api.nvim_win_get_height(0)
-  local win_width = vim.api.nvim_win_get_width(0)
-
-  -- Calculate position relative to cursor (unified with confirm_action)
-  local row = 1 -- 1 line below cursor
-  local col = 0 -- Same column as cursor
-
-  -- Adjust if window would go off screen
-  -- Calculate available space below cursor in window
-  local cursor_row_in_window = cursor[1] - vim.fn.line('w0') + 1
-  if height + 2 > win_height - cursor_row_in_window then
-    row = -height - 1 -- Show above cursor instead
+    local w = vim.fn.strdisplaywidth(line)
+    if w > longest then
+      longest = w
+    end
   end
 
-  if cursor[2] + width > win_width then
-    col = win_width - width - cursor[2] -- Shift left to fit
+  -- Width is based on longest line, but clamped to [min_width, max_width]
+  local width = math.min(max_width, math.max(min_width, longest))
+
+  -- Adjust effective width if 'showbreak' is set (prefix shown for wrapped lines)
+  local showbreak_w = vim.fn.strdisplaywidth(vim.o.showbreak or "")
+  local eff_width = math.max(1, width - showbreak_w)
+
+  -- Calculate wrapped height (each long line may occupy multiple rows)
+  local function calc_wrapped_height(lines_, eff_w)
+    local total = 0
+    for _, line in ipairs(lines_) do
+      local w = vim.fn.strdisplaywidth(line)
+      if w == 0 then
+        total = total + 1
+      else
+        total = total + math.max(1, math.ceil(w / eff_w))
+      end
+    end
+    return total
   end
 
-  -- Create float window
+  local height = calc_wrapped_height(lines, eff_width)
+  height = math.min(max_height, math.max(min_height, height))
+
+  -- Create floating window
   float_win = vim.api.nvim_open_win(float_buf, false, {
     relative = "cursor",
-    row = row,
-    col = col,
+    row = 1,
+    col = 0,
     width = width,
     height = height,
     style = "minimal",
     border = float_config.border or "rounded",
   })
 
-  -- Set buffer options
+  -- Buffer / Window options
   vim.api.nvim_buf_set_option(float_buf, "modifiable", false)
   vim.api.nvim_buf_set_option(float_buf, "buftype", "nofile")
 
-  -- Set window options
+  -- Enable wrapping so text actually folds to the calculated width
+  vim.api.nvim_win_set_option(float_win, "wrap", true)
+  vim.api.nvim_win_set_option(float_win, "linebreak", true) -- do not break mid-word
+  if float_config.breakindent then
+    vim.api.nvim_win_set_option(float_win, "breakindent", true)
+  end
+
+  -- Highlight groups
   vim.api.nvim_win_set_option(float_win, "winhl", "Normal:NormalFloat,FloatBorder:FloatBorder")
 end
 
@@ -136,7 +132,7 @@ function M.refresh_buffer(bufnr)
   end
 
   local marks = require("fusen.marks")
-  
+
   -- Sync extmark positions with data before refreshing
   marks.sync_extmark_positions(bufnr)
 
@@ -159,7 +155,7 @@ function M.refresh_buffer(bufnr)
 
       if mode == "eol" or mode == "both" then
         local virt_text = {
-          { config.annotation_display.prefix .. mark.annotation, config.mark.hl_group },
+          { mark.annotation, config.mark.hl_group },
         }
 
         pcall(vim.api.nvim_buf_set_extmark, bufnr, namespace, mark.line - 1, 0, {
