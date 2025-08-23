@@ -151,7 +151,7 @@ function M.marks_picker(opts)
               local ui = require("fusen.ui")
               ui.refresh_all_buffers()
               local storage = require("fusen.storage")
-              storage.auto_save()
+              storage.save()
               vim.notify(
                 string.format("Removed mark at %s:%d", selection.value.file, selection.value.line),
                 vim.log.levels.INFO

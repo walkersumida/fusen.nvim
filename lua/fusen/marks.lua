@@ -91,7 +91,7 @@ function M.sync_extmark_positions(bufnr)
   -- Save to JSON file only when position changes
   if position_changed then
     local storage = require("fusen.storage")
-    storage.save_immediate()
+    storage.save()
   end
 end
 

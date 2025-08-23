@@ -1,8 +1,6 @@
 local M = {}
 local git = require("fusen.git")
 
-local auto_save_disabled = false
-
 local function get_save_file()
   local config = require("fusen.config").get()
   return config.save_file
@@ -51,16 +49,7 @@ local function write_file(path, data)
   return write_ok
 end
 
-
 function M.save()
-  local marks = require("fusen.marks")
-  local marks_data = marks.get_marks_data()
-
-  local save_file = get_save_file()
-  return write_file(save_file, marks_data)
-end
-
-function M.save_immediate()
   local marks = require("fusen.marks")
   local current_marks = marks.get_marks_data()
 
@@ -81,30 +70,6 @@ function M.load()
   marks.set_marks_data(data)
 
   return true
-end
-
-function M.auto_save()
-  if auto_save_disabled then
-    return
-  end
-
-  local config = require("fusen.config").get()
-  if config.auto_save then
-    M.save_immediate()
-  end
-end
-
-function M.disable_auto_save()
-  auto_save_disabled = true
-end
-
-function M.enable_auto_save()
-  auto_save_disabled = false
-end
-
-function M.force_save()
-  -- Force save regardless of auto_save_disabled flag
-  return M.save()
 end
 
 function M.setup_autocmds()
