@@ -111,9 +111,6 @@ require("fusen").setup({
     list_marks = "ml",      -- Show marks in quickfix
   }
   
-  -- Git branch awareness
-  branch_aware = true,      -- Store bookmarks per git branch
-  
   -- Sign column priority
   sign_priority = 10,
   
@@ -256,16 +253,6 @@ require("fusen").setup({
       max_height = 15,     -- Maximum height
     }
   }
-})
-```
-
-### Disable Git Branch Awareness
-
-If you prefer global bookmarks across all branches:
-
-```lua
-require("fusen").setup({
-  branch_aware = false,  -- All bookmarks will be global
 })
 ```
 

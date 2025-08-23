@@ -18,8 +18,6 @@ M.defaults = {
     list_marks = "ml",
   },
 
-  branch_aware = true,
-
   sign_priority = 10,
 
   annotation_display = {
