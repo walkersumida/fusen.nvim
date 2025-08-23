@@ -1,5 +1,4 @@
 local M = {}
-local git = require("fusen.git")
 
 local function get_save_file()
   local config = require("fusen.config").get()

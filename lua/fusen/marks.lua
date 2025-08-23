@@ -8,7 +8,6 @@ local file_marks_data = {}
 -- Display management: { bufnr -> { line -> extmark_id } }
 local buffer_extmarks = {}
 local current_branch = nil
-local current_git_root = nil
 -- Track loaded buffers to prevent duplicate loading
 local loaded_buffers = {}
 
@@ -411,7 +410,6 @@ function M.init()
   file_marks_data = {}
   buffer_extmarks = {}
   current_branch = nil
-  current_git_root = nil
   loaded_buffers = {}
 end
 

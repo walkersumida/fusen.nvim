@@ -4,16 +4,6 @@ local function telescope_available()
   return pcall(require, "telescope")
 end
 
-function M.setup()
-  if not telescope_available() then
-    return false
-  end
-
-  local telescope = require("telescope")
-  telescope.load_extension("fusen")
-  return true
-end
-
 function M.marks_picker(opts)
   if not telescope_available() then
     vim.notify("Telescope is not installed", vim.log.levels.WARN)

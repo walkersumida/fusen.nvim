@@ -39,21 +39,6 @@ function M.is_git_repo(path)
   return result == "true"
 end
 
-function M.get_relative_path(file_path, git_root)
-  if not git_root then
-    return file_path
-  end
-
-  file_path = vim.fn.fnamemodify(file_path, ":p")
-  git_root = vim.fn.fnamemodify(git_root, ":p")
-
-  if vim.startswith(file_path, git_root) then
-    return file_path:sub(#git_root + 1):gsub("^/", "")
-  end
-
-  return file_path
-end
-
 local branch_cache = {
   branch = nil,
   git_root = nil,
