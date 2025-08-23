@@ -114,9 +114,6 @@ require("fusen").setup({
   -- Git branch awareness
   branch_aware = true,      -- Store bookmarks per git branch
   
-  -- Auto-save on buffer leave
-  auto_save = true,
-  
   -- Sign column priority
   sign_priority = 10,
   

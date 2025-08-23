@@ -156,7 +156,7 @@ function M.add_mark()
       marks.add_mark(bufnr, line, annotation)
     end
     ui.refresh_buffer(bufnr)
-    storage.save_immediate()
+    storage.save()
     vim.notify(action .. " mark", vim.log.levels.INFO)
   end)
 end
@@ -178,7 +178,7 @@ function M.clear_mark()
   if confirmed then
     marks.remove_mark(bufnr, line)
     ui.refresh_buffer(bufnr)
-    storage.save_immediate()
+    storage.save()
     vim.notify("Mark removed", vim.log.levels.INFO)
   end
 end
@@ -193,7 +193,7 @@ function M.clear_buffer()
   if confirmed then
     marks.clear_buffer_marks(bufnr)
     ui.refresh_buffer(bufnr)
-    storage.save_immediate()
+    storage.save()
     vim.notify("Buffer marks cleared", vim.log.levels.INFO)
   end
 end
@@ -203,7 +203,7 @@ function M.clear_all()
   if confirmed then
     marks.clear_all_marks()
     ui.refresh_all_buffers()
-    storage.save_immediate()
+    storage.save()
     vim.notify("All marks cleared", vim.log.levels.INFO)
   end
 end
@@ -346,7 +346,7 @@ function M.setup_commands()
   end, {})
 
   vim.api.nvim_create_user_command("FusenSave", function()
-    local result = storage.force_save()
+    local result = storage.save()
     if result then
       vim.notify("Marks saved successfully", vim.log.levels.INFO)
     else

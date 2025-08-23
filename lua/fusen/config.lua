@@ -20,8 +20,6 @@ M.defaults = {
 
   branch_aware = true,
 
-  auto_save = true,
-
   sign_priority = 10,
 
   annotation_display = {

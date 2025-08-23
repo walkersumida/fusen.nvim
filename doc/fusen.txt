@@ -79,7 +79,6 @@ Default configuration: >lua
       },
       
       branch_aware = true,
-      auto_save = true,
       sign_priority = 10,
       
       annotation_display = {
@@ -108,9 +107,6 @@ Configuration options:
 
 `branch_aware`                                           *fusen-opt-branch_aware*
     Store bookmarks per git branch. Default: true
-
-`auto_save`                                                 *fusen-opt-auto_save*
-    Automatically save marks on buffer leave. Default: true
 
 `sign_priority`                                         *fusen-opt-sign_priority*
     Priority for sign column marks. Default: 10
