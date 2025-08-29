@@ -44,9 +44,7 @@ A sticky note bookmarks plugin for Neovim with git branch awareness. Place stick
 {
   "walkersumida/fusen.nvim",
   event = "VimEnter",
-  config = function()
-    require("fusen").setup()
-  end
+  opts = {},
 }
 ```
 
@@ -55,11 +53,9 @@ For custom save file location:
 {
   "walkersumida/fusen.nvim",
   event = "VimEnter",
-  config = function()
-    require("fusen").setup({
-      save_file = vim.fn.expand("$HOME") .. "/my_fusen_marks.json",
-    })
-  end
+  opts = {
+    save_file = vim.fn.expand("$HOME") .. "/my_fusen_marks.json",
+  }
 }
 ```
 
