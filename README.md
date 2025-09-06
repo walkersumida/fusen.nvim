@@ -193,6 +193,7 @@ All default mappings start with `m` prefix for consistency:
 | `:FusenLoad` | Manually load marks |
 | `:FusenInfo` | Show info about mark at current line |
 | `:FusenBranch` | Show current git branch info |
+| `:FusenOpenSaveFile` | Open save file for debugging/editing |
 
 ### Telescope Integration
 

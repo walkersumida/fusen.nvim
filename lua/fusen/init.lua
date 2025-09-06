@@ -236,6 +236,12 @@ function M.list_marks()
   ui.create_quickfix_list()
 end
 
+function M.open_save_file()
+  local save_file = config.get().save_file
+  vim.cmd.edit(save_file)
+  vim.notify("Opened: " .. save_file, vim.log.levels.INFO)
+end
+
 function M.refresh_marks()
   ui.refresh_all_buffers()
 end
@@ -343,6 +349,10 @@ function M.setup_commands()
 
   vim.api.nvim_create_user_command("FusenRefresh", function()
     M.refresh_marks()
+  end, {})
+
+  vim.api.nvim_create_user_command("FusenOpenSaveFile", function()
+    M.open_save_file()
   end, {})
 
   vim.api.nvim_create_user_command("FusenSave", function()
