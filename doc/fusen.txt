@@ -185,6 +185,9 @@ COMMANDS                                                     *fusen-commands*
 :FusenBranch                                                   *:FusenBranch*
     Show current git branch information.
 
+:FusenOpenSaveFile                                       *:FusenOpenSaveFile*
+    Open the save file in editor for debugging or manual editing.
+
 ==============================================================================
 MAPPINGS                                                     *fusen-mappings*
 
