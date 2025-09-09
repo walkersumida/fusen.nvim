@@ -72,25 +72,66 @@ local function show_float_window(annotation, opts)
   -- Width is based on longest line, but clamped to [min_width, max_width]
   local width = math.min(max_width, math.max(min_width, longest))
 
-  -- Adjust effective width if 'showbreak' is set (prefix shown for wrapped lines)
-  local showbreak_w = vim.fn.strdisplaywidth(vim.o.showbreak or "")
-  local eff_width = math.max(1, width - showbreak_w)
+  -- Calculate how many rows a single line needs when wrapped
+  local function calculate_line_rows(line, width_)
+    -- Empty line takes 1 row
+    if line == "" then
+      return 1
+    end
 
-  -- Calculate wrapped height (each long line may occupy multiple rows)
-  local function calc_wrapped_height(lines_, eff_w)
+    local line_width = vim.fn.strdisplaywidth(line)
+
+    -- Line fits in one row
+    if line_width <= width_ then
+      return 1
+    end
+
+    -- No spaces (e.g., Japanese text or very long word)
+    if not line:find("%s") then
+      return math.ceil(line_width / width_)
+    end
+
+    -- Has spaces - need word-based wrapping
+    local rows = 1
+    local current_width = 0
+
+    -- Split by whitespace while preserving spaces
+    for word in line:gmatch("%S+") do
+      local word_width = vim.fn.strdisplaywidth(word)
+
+      -- Add space width if not at line start
+      local space_width = current_width > 0 and 1 or 0
+
+      if current_width > 0 and current_width + space_width + word_width > width_ then
+        -- Word doesn't fit on current line
+        rows = rows + 1
+        current_width = word_width
+
+        -- Handle very long words that exceed width
+        while current_width > width_ do
+          rows = rows + 1
+          current_width = current_width - width_
+        end
+      else
+        -- Word fits on current line
+        current_width = current_width + space_width + word_width
+      end
+    end
+
+    return rows
+  end
+
+  -- Calculate wrapped height considering linebreak (word wrap)
+  local function calc_wrapped_height_with_linebreak(lines_, width_)
     local total = 0
     for _, line in ipairs(lines_) do
-      local w = vim.fn.strdisplaywidth(line)
-      if w == 0 then
-        total = total + 1
-      else
-        total = total + math.max(1, math.ceil(w / eff_w))
-      end
+      total = total + calculate_line_rows(line, width_)
     end
     return total
   end
 
-  local height = calc_wrapped_height(lines, eff_width)
+  -- Calculate height with linebreak consideration
+  local height = calc_wrapped_height_with_linebreak(lines, width)
   height = math.min(max_height, math.max(min_height, height))
 
   -- Create floating window
@@ -110,7 +151,7 @@ local function show_float_window(annotation, opts)
 
   -- Enable wrapping so text actually folds to the calculated width
   vim.api.nvim_win_set_option(float_win, "wrap", true)
-  vim.api.nvim_win_set_option(float_win, "linebreak", true) -- do not break mid-word
+  vim.api.nvim_win_set_option(float_win, "linebreak", true)
   if float_config.breakindent then
     vim.api.nvim_win_set_option(float_win, "breakindent", true)
   end
@@ -205,7 +246,6 @@ end
 function M.create_quickfix_list()
   local marks = require("fusen.marks")
   local all_marks = marks.get_marks()
-  local config = require("fusen.config").get()
 
   if #all_marks == 0 then
     vim.notify("No marks found", vim.log.levels.INFO)
