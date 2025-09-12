@@ -159,9 +159,14 @@ function M.marks_picker(opts)
           end
         end
 
-        -- Map delete function to both insert and normal modes
-        map("i", "<C-d>", delete_mark)
-        map("n", "<C-d>", delete_mark)
+        -- Map delete function to both insert and normal modes with configurable keys
+        local telescope_config = config.telescope or {}
+        local telescope_keymaps = telescope_config.keymaps or {}
+        local delete_key_insert = telescope_keymaps.delete_mark_insert or "<C-d>"
+        local delete_key_normal = telescope_keymaps.delete_mark_normal or "<C-d>"
+
+        map("i", delete_key_insert, delete_mark)
+        map("n", delete_key_normal, delete_mark)
 
         return true
       end,

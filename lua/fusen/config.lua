@@ -18,6 +18,13 @@ M.defaults = {
     list_marks = "ml",
   },
 
+  telescope = {
+    keymaps = {
+      delete_mark_insert = "<C-d>",
+      delete_mark_normal = "<C-d>",
+    },
+  },
+
   sign_priority = 10,
 
   annotation_display = {
