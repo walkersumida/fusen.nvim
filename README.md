@@ -105,7 +105,15 @@ require("fusen").setup({
     next_mark = "mn",       -- Jump to next mark
     prev_mark = "mp",       -- Jump to previous mark
     list_marks = "ml",      -- Show marks in quickfix
-  }
+  },
+  
+  -- Telescope integration settings
+  telescope = {
+    keymaps = {
+      delete_mark_insert = "<C-d>",  -- Delete mark in insert mode
+      delete_mark_normal = "<C-d>",  -- Delete mark in normal mode
+    },
+  },
   
   -- Sign column priority
   sign_priority = 10,
@@ -208,7 +216,17 @@ vim.keymap.set("n", "<leader>fm", ":Telescope fusen marks<CR>", { desc = "Find f
 
 -- In Telescope window:
 -- <CR> - Jump to mark
--- <C-d> - Delete mark
+-- <C-d> - Delete mark (customizable, see configuration)
+
+-- Custom key mappings for Telescope
+require("fusen").setup({
+  telescope = {
+    keymaps = {
+      delete_mark_insert = "<C-x>",  -- Custom key for insert mode
+      delete_mark_normal = "dd",     -- Custom key for normal mode
+    },
+  },
+})
 ```
 
 ## 🌳 Git Branch Awareness
