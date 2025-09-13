@@ -174,7 +174,7 @@ function M.clear_mark()
     return
   end
 
-  local confirmed = confirm_action(string.format("Delete mark at line %d? (y/n)", line))
+  local confirmed = confirm_action(string.format("Delete mark at line %d? (y/N)", line))
   if confirmed then
     marks.remove_mark(bufnr, line)
     ui.refresh_buffer(bufnr)
@@ -189,7 +189,7 @@ function M.clear_buffer()
     return
   end
 
-  local confirmed = confirm_action("Clear all marks in buffer? (y/n)")
+  local confirmed = confirm_action("Clear all marks in buffer? (y/N)")
   if confirmed then
     marks.clear_buffer_marks(bufnr)
     ui.refresh_buffer(bufnr)
@@ -199,7 +199,7 @@ function M.clear_buffer()
 end
 
 function M.clear_all()
-  local confirmed = confirm_action("Clear ALL marks in JSON file? This will delete all bookmarks! (y/n)")
+  local confirmed = confirm_action("Clear ALL marks in JSON file? This will delete all bookmarks! (y/N)")
   if confirmed then
     marks.clear_all_marks()
     ui.refresh_all_buffers()
