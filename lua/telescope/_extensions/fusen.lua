@@ -16,4 +16,3 @@ return telescope.register_extension({
     fusen = fusen_telescope.marks_picker,
   },
 })
-
