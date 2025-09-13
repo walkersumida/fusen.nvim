@@ -78,6 +78,13 @@ Default configuration: >lua
         list_marks = "ml",
       },
       
+      telescope = {
+        keymaps = {
+          delete_mark_insert = "<C-d>",  -- Delete mark in insert mode
+          delete_mark_normal = "<C-d>",  -- Delete mark in normal mode
+        },
+      },
+      
       sign_priority = 10,
       
       annotation_display = {
@@ -103,6 +110,14 @@ Configuration options:
 
 `keymaps`                                                     *fusen-opt-keymaps*
     Table of key mappings.
+
+`telescope`                                                 *fusen-opt-telescope*
+    Table of telescope-specific settings.
+    
+    `keymaps`                                       *fusen-opt-telescope-keymaps*
+        Telescope window key mappings:
+        - delete_mark_insert: Key to delete mark in insert mode (default: "<C-d>")
+        - delete_mark_normal: Key to delete mark in normal mode (default: "<C-d>")
 
 `sign_priority`                                         *fusen-opt-sign_priority*
     Priority for sign column marks. Default: 10
@@ -257,7 +272,18 @@ Or in Lua: >lua
 
 Telescope mappings:
 - `<CR>`: Jump to selected mark
-- `<C-d>`: Delete selected mark
+- `<C-d>`: Delete selected mark (default, customizable)
+
+Customizing telescope key mappings: >lua
+    require("fusen").setup({
+      telescope = {
+        keymaps = {
+          delete_mark_insert = "<C-x>",  -- Custom key for insert mode
+          delete_mark_normal = "dd",      -- Custom key for normal mode
+        },
+      },
+    })
+<
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:

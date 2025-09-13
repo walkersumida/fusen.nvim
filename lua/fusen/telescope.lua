@@ -121,7 +121,8 @@ function M.marks_picker(opts)
           end
         end)
 
-        map("i", "<C-d>", function()
+        -- Define the delete function to be used in both modes
+        local delete_mark = function()
           local selection = action_state.get_selected_entry()
           if selection then
             -- Find buffer for the file
@@ -146,11 +147,26 @@ function M.marks_picker(opts)
                 string.format("Removed mark at %s:%d", selection.value.file, selection.value.line),
                 vim.log.levels.INFO
               )
+
+              -- Close current picker and reopen with updated marks
+              actions.close(prompt_bufnr)
+              vim.schedule(function()
+                M.marks_picker(opts)
+              end)
             else
               vim.notify(string.format("Buffer not found for %s", selection.value.file), vim.log.levels.WARN)
             end
           end
-        end)
+        end
+
+        -- Map delete function to both insert and normal modes with configurable keys
+        local telescope_config = config.telescope or {}
+        local telescope_keymaps = telescope_config.keymaps or {}
+        local delete_key_insert = telescope_keymaps.delete_mark_insert or "<C-d>"
+        local delete_key_normal = telescope_keymaps.delete_mark_normal or "<C-d>"
+
+        map("i", delete_key_insert, delete_mark)
+        map("n", delete_key_normal, delete_mark)
 
         return true
       end,
