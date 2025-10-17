@@ -121,7 +121,8 @@ require("fusen").setup({
   -- Annotation display settings
   annotation_display = {
     mode = "float", -- "eol", "float", "both", "none"
-    
+    spacing = 2,    -- Number of spaces before annotation in eol mode
+
     -- Float window settings
     float = {
       delay = 100,

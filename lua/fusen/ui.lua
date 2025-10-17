@@ -195,8 +195,9 @@ function M.refresh_buffer(bufnr)
       local mode = config.annotation_display.mode
 
       if mode == "eol" or mode == "both" then
+        local spacing = string.rep(" ", config.annotation_display.spacing or 2)
         local virt_text = {
-          { mark.annotation, config.mark.hl_group },
+          { spacing .. mark.annotation, config.mark.hl_group },
         }
 
         pcall(vim.api.nvim_buf_set_extmark, bufnr, namespace, mark.line - 1, 0, {
