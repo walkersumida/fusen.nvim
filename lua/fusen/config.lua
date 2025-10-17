@@ -29,6 +29,7 @@ M.defaults = {
 
   annotation_display = {
     mode = "float", -- "eol", "float", "both", "none"
+    spacing = 2, -- Number of spaces to add before annotation in eol mode
 
     float = {
       delay = 100,
