@@ -65,10 +65,12 @@ For custom save file location:
 use {
   "walkersumida/fusen.nvim",
   config = function()
-    require("fusen").setup()
+    require("fusen").setup()  -- Add options here if needed
   end
 }
 ```
+
+> **Note:** Configuration examples below use lazy.nvim's `opts` syntax. For packer.nvim, pass the same options to `setup()`.
 
 ### Using [vim-plug](https://github.com/junegunn/vim-plug)
 
@@ -78,67 +80,73 @@ Plug 'walkersumida/fusen.nvim'
 
 Then add to your init.lua:
 ```lua
-require("fusen").setup()
+require("fusen").setup()  -- Add options here if needed
 ```
+
+> **Note:** Configuration examples below use lazy.nvim's `opts` syntax. For vim-plug, pass the same options to `setup()`.
 
 ## ⚙️ Configuration
 
 ### Default Configuration
 
 ```lua
-require("fusen").setup({
-  -- Storage location
-  save_file = vim.fn.expand("$HOME") .. "/fusen_marks.json",
-  
-  -- Mark appearance
-  mark = {
-    icon = "📝",
-    hl_group = "FusenMark",
-  },
-  
-  -- Key mappings
-  keymaps = {
-    add_mark = "me",        -- Add/edit sticky note
-    clear_mark = "mc",      -- Clear mark at current line
-    clear_buffer = "mC",    -- Clear all marks in buffer
-    clear_all = "mD",       -- Clear ALL marks (deletes entire JSON content)
-    next_mark = "mn",       -- Jump to next mark
-    prev_mark = "mp",       -- Jump to previous mark
-    list_marks = "ml",      -- Show marks in quickfix
-  },
-  
-  -- Telescope integration settings
-  telescope = {
-    keymaps = {
-      delete_mark_insert = "<C-d>",  -- Delete mark in insert mode
-      delete_mark_normal = "<C-d>",  -- Delete mark in normal mode
-    },
-  },
-  
-  -- Sign column priority
-  sign_priority = 10,
-  
-  -- Annotation display settings
-  annotation_display = {
-    mode = "float", -- "eol", "float", "both", "none"
-    spacing = 2,    -- Number of spaces before annotation in eol mode
+-- Using lazy.nvim
+{
+  "walkersumida/fusen.nvim",
+  opts = {
+    -- Storage location
+    save_file = vim.fn.expand("$HOME") .. "/fusen_marks.json",
 
-    -- Float window settings
-    float = {
-      delay = 100,
-      border = "rounded",
-      max_width = 50,
-      max_height = 10,
+    -- Mark appearance
+    mark = {
+      icon = "📝",
+      hl_group = "FusenMark",
     },
-  },
-  
-  -- Exclude specific filetypes from keymaps
-  exclude_filetypes = {
-    -- "neo-tree",     -- Example: neo-tree
-    -- "NvimTree",     -- Example: nvim-tree
-    -- "nerdtree",     -- Example: NERDTree
-  },
-})
+
+    -- Key mappings
+    keymaps = {
+      add_mark = "me",        -- Add/edit sticky note
+      clear_mark = "mc",      -- Clear mark at current line
+      clear_buffer = "mC",    -- Clear all marks in buffer
+      clear_all = "mD",       -- Clear ALL marks (deletes entire JSON content)
+      next_mark = "mn",       -- Jump to next mark
+      prev_mark = "mp",       -- Jump to previous mark
+      list_marks = "ml",      -- Show marks in quickfix
+    },
+
+    -- Telescope integration settings
+    telescope = {
+      keymaps = {
+        delete_mark_insert = "<C-d>",  -- Delete mark in insert mode
+        delete_mark_normal = "<C-d>",  -- Delete mark in normal mode
+      },
+    },
+
+    -- Sign column priority
+    sign_priority = 10,
+
+    -- Annotation display settings
+    annotation_display = {
+      mode = "float", -- "eol", "float", "both", "none"
+      spacing = 2,    -- Number of spaces before annotation in eol mode
+
+      -- Float window settings
+      float = {
+        delay = 100,
+        border = "rounded",
+        max_width = 50,
+        max_height = 10,
+      },
+    },
+
+    -- Exclude specific filetypes from keymaps
+    exclude_filetypes = {
+      -- "neo-tree",     -- Example: neo-tree
+      -- "NvimTree",     -- Example: nvim-tree
+      -- "nerdtree",     -- Example: NERDTree
+    },
+  }
+}
 ```
 
 ### Annotation Display Modes
@@ -153,17 +161,21 @@ The `annotation_display.mode` option controls how annotations are displayed:
 #### Float Window Settings
 
 ```lua
-require("fusen").setup({
-  annotation_display = {
-    mode = "float",
-    float = {
-      delay = 300,         -- Show after 300ms (default: 100ms)
-      border = "single",   -- Border style: "single", "double", "rounded", etc.
-      max_width = 60,      -- Maximum width (default: 50)
-      max_height = 15,     -- Maximum height (default: 10)
+-- Using lazy.nvim
+{
+  "walkersumida/fusen.nvim",
+  opts = {
+    annotation_display = {
+      mode = "float",
+      float = {
+        delay = 300,         -- Show after 300ms (default: 100ms)
+        border = "single",   -- Border style: "single", "double", "rounded", etc.
+        max_width = 60,      -- Maximum width (default: 50)
+        max_height = 15,     -- Maximum height (default: 10)
+      }
     }
   }
-})
+}
 ```
 
 - **`delay`**: Time in milliseconds to wait after cursor stops before showing the float window
@@ -219,15 +231,18 @@ vim.keymap.set("n", "<leader>fm", ":Telescope fusen marks<CR>", { desc = "Find f
 -- <CR> - Jump to mark
 -- <C-d> - Delete mark (customizable, see configuration)
 
--- Custom key mappings for Telescope
-require("fusen").setup({
-  telescope = {
-    keymaps = {
-      delete_mark_insert = "<C-x>",  -- Custom key for insert mode
-      delete_mark_normal = "dd",     -- Custom key for normal mode
+-- Custom key mappings for Telescope (using lazy.nvim)
+{
+  "walkersumida/fusen.nvim",
+  opts = {
+    telescope = {
+      keymaps = {
+        delete_mark_insert = "<C-x>",  -- Custom key for insert mode
+        delete_mark_normal = "dd",     -- Custom key for normal mode
+      },
     },
-  },
-})
+  }
+}
 ```
 
 ## 🌳 Git Branch Awareness
@@ -259,17 +274,21 @@ This is especially useful when:
 Configure how annotations appear in floating windows:
 
 ```lua
-require("fusen").setup({
-  annotation_display = {
-    mode = "float",  -- Use floating windows
-    float = {
-      delay = 300,         -- Show after 300ms
-      border = "single",   -- Border style
-      max_width = 60,      -- Maximum width
-      max_height = 15,     -- Maximum height
+-- Using lazy.nvim
+{
+  "walkersumida/fusen.nvim",
+  opts = {
+    annotation_display = {
+      mode = "float",  -- Use floating windows
+      float = {
+        delay = 300,         -- Show after 300ms
+        border = "single",   -- Border style
+        max_width = 60,      -- Maximum width
+        max_height = 15,     -- Maximum height
+      }
     }
   }
-})
+}
 ```
 
 ### Custom Highlighting
@@ -277,19 +296,25 @@ require("fusen").setup({
 You can customize the appearance of marks by changing the highlight group:
 
 ```lua
-require("fusen").setup({
-  mark = {
-    icon = "📝",
-    hl_group = "MyCustomHighlight",  -- Custom highlight group
+-- Using lazy.nvim
+{
+  "walkersumida/fusen.nvim",
+  opts = {
+    mark = {
+      icon = "📝",
+      hl_group = "MyCustomHighlight",  -- Custom highlight group
+    },
   },
-})
-
--- Define your custom highlight group
-vim.api.nvim_set_hl(0, "MyCustomHighlight", {
-  fg = "#ff6b6b",      -- Red foreground
-  bg = "#1e1e1e",      -- Dark background
-  bold = true,         -- Bold text
-})
+  config = function(_, opts)
+    require("fusen").setup(opts)
+    -- Define your custom highlight group
+    vim.api.nvim_set_hl(0, "MyCustomHighlight", {
+      fg = "#ff6b6b",      -- Red foreground
+      bg = "#1e1e1e",      -- Dark background
+      bold = true,         -- Bold text
+    })
+  end,
+}
 ```
 
 The `hl_group` setting controls the color and style of:
