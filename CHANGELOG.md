@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/walkersumida/fusen.nvim/compare/v0.5.1...v0.6.0) (2025-10-18)
+
+
+### Features
+
+* add configurable spacing before EOL annotations ([#11](https://github.com/walkersumida/fusen.nvim/issues/11)) ([e4d1cd5](https://github.com/walkersumida/fusen.nvim/commit/e4d1cd52d9fddb0275697eecc90a5f7deee5df2d))
+
+
+### Documentation
+
+* unify configuration examples to use lazy.nvim syntax ([#13](https://github.com/walkersumida/fusen.nvim/issues/13)) ([29ac230](https://github.com/walkersumida/fusen.nvim/commit/29ac230358f1e86b791a7c28f146d004a94e83da))
+
 ## [0.5.1](https://github.com/walkersumida/fusen.nvim/compare/v0.5.0...v0.5.1) (2025-09-13)
 
 
