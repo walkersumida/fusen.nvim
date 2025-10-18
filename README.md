@@ -1,10 +1,12 @@
 # 📝 fusen.nvim
 
-A sticky note bookmarks plugin for Neovim with git branch awareness. Place sticky notes (fusen - 付箋 in Japanese) in your code and keep them organized across different git branches.
+A sticky notes plugin for Neovim with git branch awareness. Place sticky notes (fusen - 付箋 in Japanese) in your code and keep them organized across different git branches.
 
 ![Neovim](https://img.shields.io/badge/Neovim-0.7+-green.svg)
 ![Lua](https://img.shields.io/badge/Lua-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
+
+https://github.com/user-attachments/assets/4ebcb70b-0be8-4668-8a65-2eb5c950aec4
 
 <table>
   <tr>
@@ -12,29 +14,37 @@ A sticky note bookmarks plugin for Neovim with git branch awareness. Place stick
   </tr>
   <tr>
     <td>
-      <img src="https://github.com/user-attachments/assets/038bbff6-643a-4e87-aa28-73735a7de0e4" />
+      <img src="https://github.com/user-attachments/assets/8a2d1746-8b34-468b-8e44-6d8797bb7b96" />
     </td>
   </tr>
   <tr>
-    <th>Viewing annotation on hover</th>
+    <th>Viewing annotation</th>
   </tr>
   <tr>
     <td>
-      <img src="https://github.com/user-attachments/assets/92c27b03-4ea0-426c-bf2c-ba8cbabbad83" />
+      <img src="https://github.com/user-attachments/assets/43b4f48a-82ce-4af7-8408-a841ed217b82" />
+    </td>
+  </tr>
+  <tr>
+    <th>Listing marks in Telescope</th>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://github.com/user-attachments/assets/4d91a644-4261-4e88-ae15-1bc4836f5e03" />
     </td>
   </tr>
 </table>
 
 ## ✨ Features
 
-- 📝 **Simple sticky notes** - Clean and minimalist bookmark system
-- 🌳 **Git branch awareness** - Bookmarks are stored per git branch
-- 💾 **Persistent storage** - Your bookmarks are saved between sessions
-- 📝 **Annotations** - Add descriptive text to your bookmarks
+- 📝 **Simple sticky notes** - Clean and minimalist sticky note system
+- 🌳 **Git branch awareness** - Sticky notes are stored per git branch
+- 💾 **Persistent storage** - Your sticky notes are saved between sessions
+- 📝 **Annotations** - Add descriptive text to your sticky notes
 - 🎈 **Float window display** - Show annotations in floating windows on cursor hover
-- 🔍 **Telescope integration** - Search and navigate through all your bookmarks
-- ⚡ **Fast navigation** - Jump between bookmarks quickly
-- 📋 **Quickfix list support** - View all bookmarks in a quickfix list
+- 🔍 **Telescope integration** - Search and navigate through all your sticky notes
+- ⚡ **Fast navigation** - Jump between sticky notes quickly
+- 📋 **Quickfix list support** - View all sticky notes in a quickfix list
 
 ## 📦 Installation
 
@@ -335,4 +345,4 @@ vim.keymap.set("n", "<leader>mc", require("fusen").clear_mark)
 
 ## ⭐ Show your support
 
-Give a ⭐️ if this project helped you!
+Give a ⭐️ if this project helped you! Thank you!
