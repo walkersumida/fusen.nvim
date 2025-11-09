@@ -1,0 +1,45 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PLENARY_VERSION: v0.1.4
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        neovim-version: ['stable', 'nightly']
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Neovim
+      uses: rhysd/action-setup-vim@v1
+      with:
+        neovim: true
+        version: ${{ matrix.neovim-version }}
+
+    - name: Cache plenary.nvim
+      uses: actions/cache@v4
+      with:
+        path: /tmp/plenary.nvim
+        key: plenary-nvim-${{ runner.os }}-${{ env.PLENARY_VERSION }}
+
+    - name: Install plenary.nvim
+      run: |
+        if [ ! -d "/tmp/plenary.nvim" ]; then
+          git clone --depth 1 --branch ${{ env.PLENARY_VERSION }} https://github.com/nvim-lua/plenary.nvim /tmp/plenary.nvim
+        else
+          echo "plenary.nvim ${{ env.PLENARY_VERSION }} loaded from cache"
+        fi
+    
+    - name: Run tests
+      run: |
+        export PLENARY_DIR=/tmp/plenary.nvim
+        nvim --headless --noplugin -u tests/minimal_init.lua -c "PlenaryBustedDirectory tests/ { minimal_init = 'tests/minimal_init.lua', sequential = true }"
