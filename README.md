@@ -5,6 +5,7 @@ A sticky notes plugin for Neovim with git branch awareness. Place sticky notes (
 ![Neovim](https://img.shields.io/badge/Neovim-0.7+-green.svg)
 ![Lua](https://img.shields.io/badge/Lua-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
+[![Tests](https://github.com/walkersumida/fusen.nvim/actions/workflows/test.yml/badge.svg)](https://github.com/walkersumida/fusen.nvim/actions/workflows/test.yml)
 
 https://github.com/user-attachments/assets/4ebcb70b-0be8-4668-8a65-2eb5c950aec4
 
@@ -53,6 +54,7 @@ https://github.com/user-attachments/assets/4ebcb70b-0be8-4668-8a65-2eb5c950aec4
 ```lua
 {
   "walkersumida/fusen.nvim",
+  version = "*",
   event = "VimEnter",
   opts = {},
 }
@@ -62,6 +64,7 @@ For custom save file location:
 ```lua
 {
   "walkersumida/fusen.nvim",
+  version = "*",
   event = "VimEnter",
   opts = {
     save_file = vim.fn.expand("$HOME") .. "/my_fusen_marks.json",
