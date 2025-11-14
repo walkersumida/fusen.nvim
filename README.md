@@ -53,6 +53,7 @@ https://github.com/user-attachments/assets/4ebcb70b-0be8-4668-8a65-2eb5c950aec4
 ```lua
 {
   "walkersumida/fusen.nvim",
+  version = "*",
   event = "VimEnter",
   opts = {},
 }
@@ -62,6 +63,7 @@ For custom save file location:
 ```lua
 {
   "walkersumida/fusen.nvim",
+  version = "*",
   event = "VimEnter",
   opts = {
     save_file = vim.fn.expand("$HOME") .. "/my_fusen_marks.json",
