@@ -89,7 +89,7 @@ Default configuration: >lua
       
       annotation_display = {
         mode = "float", -- "eol", "float", "both", "none"
-        
+
         float = {
           delay = 500,
           border = "rounded",
@@ -97,6 +97,8 @@ Default configuration: >lua
           max_height = 10,
         },
       },
+
+      enabled = true,
     }
 <
 
@@ -138,6 +140,11 @@ Configuration options:
         - border: Border style
         - max_width: Maximum window width
         - max_height: Maximum window height
+
+`enabled`                                                     *fusen-opt-enabled*
+    Whether Fusen plugin is enabled. When disabled, all marks and annotations
+    are hidden and all operations are blocked. Data is kept in memory.
+    Default: true
 
 ==============================================================================
 USAGE                                                           *fusen-usage*
@@ -203,6 +210,16 @@ COMMANDS                                                     *fusen-commands*
 :FusenOpenSaveFile                                       *:FusenOpenSaveFile*
     Open the save file in editor for debugging or manual editing.
 
+:FusenEnable                                                   *:FusenEnable*
+    Enable Fusen plugin. Shows all marks and annotations.
+
+:FusenDisable                                                 *:FusenDisable*
+    Disable Fusen plugin. Hides all marks and annotations while keeping
+    data in memory. All operations are blocked when disabled.
+
+:FusenToggle                                                   *:FusenToggle*
+    Toggle Fusen plugin on/off.
+
 ==============================================================================
 MAPPINGS                                                     *fusen-mappings*
 
@@ -258,6 +275,15 @@ require("fusen").list_marks()                            *fusen.list_marks()*
 
 require("fusen").refresh_marks()                      *fusen.refresh_marks()*
     Refresh display of all marks.
+
+require("fusen").enable()                                      *fusen.enable()*
+    Enable Fusen plugin.
+
+require("fusen").disable()                                    *fusen.disable()*
+    Disable Fusen plugin.
+
+require("fusen").toggle()                                      *fusen.toggle()*
+    Toggle Fusen plugin on/off.
 
 ==============================================================================
 TELESCOPE                                                   *fusen-telescope*

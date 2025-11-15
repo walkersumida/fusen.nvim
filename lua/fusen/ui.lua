@@ -167,6 +167,12 @@ function M.refresh_buffer(bufnr)
     return
   end
 
+  local config = require("fusen.config").get()
+  if not config.enabled then
+    M.clear_buffer(bufnr)
+    return
+  end
+
   local file_path = vim.api.nvim_buf_get_name(bufnr)
   if file_path == "" then
     return
@@ -180,7 +186,6 @@ function M.refresh_buffer(bufnr)
   M.clear_buffer(bufnr)
 
   local file_marks = marks.get_buffer_marks(bufnr)
-  local config = require("fusen.config").get()
 
   for _, mark in ipairs(file_marks) do
     local sign_id = mark.line * 1000 + (mark.created_at or 0) % 1000
@@ -315,6 +320,14 @@ function M.refresh_all_buffers()
   end
 end
 
+function M.clear_all_buffers()
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(bufnr) then
+      M.clear_buffer(bufnr)
+    end
+  end
+end
+
 function M.check_cursor_float()
   local config = require("fusen.config").get()
   local mode = config.annotation_display.mode
@@ -350,6 +363,10 @@ function M.setup_autocmds()
   vim.api.nvim_create_autocmd({ "BufRead", "BufEnter" }, {
     group = group,
     callback = function(args)
+      local config = require("fusen.config").get()
+      if not config.enabled then
+        return
+      end
       -- Load marks for this buffer if not already loaded
       local marks = require("fusen.marks")
       marks.load_buffer_marks(args.buf)
@@ -360,6 +377,10 @@ function M.setup_autocmds()
   vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
     group = group,
     callback = vim.schedule_wrap(function(args)
+      local config = require("fusen.config").get()
+      if not config.enabled then
+        return
+      end
       M.refresh_buffer(args.buf)
     end),
   })
@@ -373,6 +394,10 @@ function M.setup_autocmds()
     vim.api.nvim_create_autocmd("CursorHold", {
       group = group,
       callback = function()
+        local config = require("fusen.config").get()
+        if not config.enabled then
+          return
+        end
         if float_timer then
           vim.fn.timer_stop(float_timer)
         end
