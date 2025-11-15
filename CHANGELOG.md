@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.7.0](https://github.com/walkersumida/fusen.nvim/compare/v0.6.0...v0.7.0) (2025-11-15)
+
+
+### Features
+
+* add enable/disable/toggle commands for plugin control ([#20](https://github.com/walkersumida/fusen.nvim/issues/20)) ([845ff1b](https://github.com/walkersumida/fusen.nvim/commit/845ff1bd8c817e5a75c5af12ff841df58e863c35))
+
+
+### Documentation
+
+* unify terminology and update media content ([#14](https://github.com/walkersumida/fusen.nvim/issues/14)) ([fa8932c](https://github.com/walkersumida/fusen.nvim/commit/fa8932c87fa3ed499280311b6f9f1ba35294d152))
+
+
+### Continuous Integration
+
+* skip tests for release-please PRs ([#18](https://github.com/walkersumida/fusen.nvim/issues/18)) ([7a3b446](https://github.com/walkersumida/fusen.nvim/commit/7a3b4463203dd9172f2eed44173926d3be36f3c4))
+
 ## [0.6.1](https://github.com/walkersumida/fusen.nvim/compare/v0.6.0...v0.6.1) (2025-10-18)
 
 
