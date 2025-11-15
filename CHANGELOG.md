@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/walkersumida/fusen.nvim/compare/v0.6.0...v0.6.1) (2025-10-18)
+
+
+### Documentation
+
+* unify terminology and update media content ([#14](https://github.com/walkersumida/fusen.nvim/issues/14)) ([fa8932c](https://github.com/walkersumida/fusen.nvim/commit/fa8932c87fa3ed499280311b6f9f1ba35294d152))
+
 ## [0.6.0](https://github.com/walkersumida/fusen.nvim/compare/v0.5.1...v0.6.0) (2025-10-18)
 
 
