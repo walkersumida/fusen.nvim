@@ -40,6 +40,8 @@ M.defaults = {
   },
 
   exclude_filetypes = {},
+
+  enabled = true,
 }
 
 M.options = {}

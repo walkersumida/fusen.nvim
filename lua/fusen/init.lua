@@ -8,6 +8,16 @@ local git = require("fusen.git")
 
 local initialized = false
 
+-- Helper function to check if Fusen is enabled
+local function check_enabled()
+  local cfg = config.get()
+  if not cfg.enabled then
+    vim.notify("Fusen is currently disabled", vim.log.levels.WARN)
+    return false
+  end
+  return true
+end
+
 -- Helper function for common buffer validation
 local function get_current_buffer_info()
   local bufnr = vim.api.nvim_get_current_buf()
@@ -139,7 +149,34 @@ function M.setup(opts)
   initialized = true
 end
 
+function M.enable()
+  local cfg = config.get()
+  cfg.enabled = true
+  ui.refresh_all_buffers()
+  vim.notify("Fusen enabled", vim.log.levels.INFO)
+end
+
+function M.disable()
+  local cfg = config.get()
+  cfg.enabled = false
+  ui.clear_all_buffers()
+  vim.notify("Fusen disabled", vim.log.levels.INFO)
+end
+
+function M.toggle()
+  local cfg = config.get()
+  if cfg.enabled then
+    M.disable()
+  else
+    M.enable()
+  end
+end
+
 function M.add_mark()
+  if not check_enabled() then
+    return
+  end
+
   local bufnr, file_path, line, err = get_current_buffer_info()
   if err then
     vim.notify(err, vim.log.levels.WARN)
@@ -162,6 +199,10 @@ function M.add_mark()
 end
 
 function M.clear_mark()
+  if not check_enabled() then
+    return
+  end
+
   local bufnr, file_path, line, err = get_current_buffer_info()
   if err then
     vim.notify(err, vim.log.levels.WARN)
@@ -184,6 +225,10 @@ function M.clear_mark()
 end
 
 function M.clear_buffer()
+  if not check_enabled() then
+    return
+  end
+
   local bufnr, file_path, line, err = get_current_buffer_info()
   if err then
     return
@@ -199,6 +244,10 @@ function M.clear_buffer()
 end
 
 function M.clear_all()
+  if not check_enabled() then
+    return
+  end
+
   local confirmed = confirm_action("Clear ALL marks in JSON file? This will delete all bookmarks! (y/N)")
   if confirmed then
     marks.clear_all_marks()
@@ -384,6 +433,18 @@ function M.setup_commands()
     else
       vim.notify("Not in a git repository", vim.log.levels.INFO)
     end
+  end, {})
+
+  vim.api.nvim_create_user_command("FusenEnable", function()
+    M.enable()
+  end, {})
+
+  vim.api.nvim_create_user_command("FusenDisable", function()
+    M.disable()
+  end, {})
+
+  vim.api.nvim_create_user_command("FusenToggle", function()
+    M.toggle()
   end, {})
 end
 

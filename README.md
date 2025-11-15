@@ -158,6 +158,9 @@ require("fusen").setup()  -- Add options here if needed
       -- "NvimTree",     -- Example: nvim-tree
       -- "nerdtree",     -- Example: NERDTree
     },
+
+    -- Plugin enabled state
+    enabled = true,
   }
 }
 ```
@@ -228,6 +231,9 @@ All default mappings start with `m` prefix for consistency:
 | `:FusenInfo` | Show info about mark at current line |
 | `:FusenBranch` | Show current git branch info |
 | `:FusenOpenSaveFile` | Open save file for debugging/editing |
+| `:FusenEnable` | Enable Fusen plugin (show marks and annotations) |
+| `:FusenDisable` | Disable Fusen plugin (hide all marks and annotations) |
+| `:FusenToggle` | Toggle Fusen on/off |
 
 ### Telescope Integration
 
