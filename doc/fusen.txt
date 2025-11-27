@@ -217,9 +217,6 @@ COMMANDS                                                     *fusen-commands*
     Disable Fusen plugin. Hides all marks and annotations while keeping
     data in memory. All operations are blocked when disabled.
 
-:FusenToggle                                                   *:FusenToggle*
-    Toggle Fusen plugin on/off.
-
 ==============================================================================
 MAPPINGS                                                     *fusen-mappings*
 
