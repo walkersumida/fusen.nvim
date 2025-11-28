@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.1](https://github.com/walkersumida/fusen.nvim/compare/v0.7.0...v0.7.1) (2025-11-28)
+
+
+### Documentation
+
+* update fusen.txt ([#24](https://github.com/walkersumida/fusen.nvim/issues/24)) ([e2363a0](https://github.com/walkersumida/fusen.nvim/commit/e2363a0f9ec0586332141c525250d889479a79b5))
+
+
+### Miscellaneous Chores
+
+* **main:** release 0.7.0 ([#22](https://github.com/walkersumida/fusen.nvim/issues/22)) ([40ff72e](https://github.com/walkersumida/fusen.nvim/commit/40ff72e4289d4b894ad40f1d7a599840c23f03ad))
+
 ## [0.7.0](https://github.com/walkersumida/fusen.nvim/compare/v0.6.0...v0.7.0) (2025-11-15)
 
 
