@@ -83,6 +83,15 @@ function M.setup_autocmds()
       if existing_data then
         local marks = require("fusen.marks")
         marks.set_marks_data(existing_data)
+
+        -- Reset loaded state and re-load with hash matching
+        for _, buf_id in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_is_valid(buf_id) and vim.api.nvim_buf_is_loaded(buf_id) then
+            marks.reset_buffer_loaded(buf_id)
+            marks.load_buffer_marks(buf_id)
+          end
+        end
+
         require("fusen.ui").refresh_all_buffers()
       end
     end,

@@ -1,6 +1,12 @@
 local M = {}
 local git = require("fusen.git")
 
+-- Generate hash from line content (trimmed)
+local function get_line_hash(content)
+  local trimmed = content:match("^%s*(.-)%s*$") or ""
+  return vim.fn.sha256(trimmed):sub(1, 16)
+end
+
 -- extmark namespaces for each buffer
 local namespaces = {}
 -- Main data structure: { file_path -> { branch -> [ mark_data ] } }
@@ -82,6 +88,20 @@ function M.sync_extmark_positions(bufnr)
       local current_line = extmarks[1][2] + 1 -- Convert 0-indexed to 1-indexed
       if current_line ~= stored_line then
         M.update_mark_line(bufnr, stored_line, current_line)
+        -- Update content_hash for the new line
+        local lines = vim.api.nvim_buf_get_lines(bufnr, current_line - 1, current_line, false)
+        if lines[1] then
+          local file_path = vim.api.nvim_buf_get_name(bufnr)
+          local branch = current_branch or git.get_current_branch()
+          local branch_key = get_mark_key(file_path, branch)
+          local marks_list = get_file_marks(file_path, branch_key)
+          for _, mark in ipairs(marks_list) do
+            if mark.line == current_line then
+              mark.content_hash = get_line_hash(lines[1])
+              break
+            end
+          end
+        end
         position_changed = true
       end
     end
@@ -174,10 +194,18 @@ function M.add_mark(bufnr, line, annotation)
     end
   end
 
+  -- Get line content and compute hash
+  local lines = vim.api.nvim_buf_get_lines(bufnr, line - 1, line, false)
+  local content_hash = nil
+  if lines[1] then
+    content_hash = get_line_hash(lines[1])
+  end
+
   local mark_data = {
     line = line,
     annotation = annotation or "",
     created_at = os.time(),
+    content_hash = content_hash,
   }
 
   if existing_index then
@@ -423,34 +451,23 @@ function M.set_marks_data(data)
     return
   end
 
-  -- Store file-based data
+  -- Store file-based data only (no extmark creation)
   file_marks_data = vim.deepcopy(data)
 
-  -- Restore extmarks for currently open buffers
-  for file_path, branch_data in pairs(data) do
-    -- Find buffer for this file path
-    for _, buf_id in ipairs(vim.api.nvim_list_bufs()) do
-      if vim.api.nvim_buf_is_valid(buf_id) then
-        local buf_name = vim.api.nvim_buf_get_name(buf_id)
-        if buf_name == file_path then
-          -- Restore marks for this buffer
-          local branch = current_branch or git.get_current_branch()
-          local branch_key = get_mark_key(file_path, branch)
-
-          if branch_data[branch_key] then
-            for _, mark_data in ipairs(branch_data[branch_key]) do
-              create_extmark(buf_id, mark_data.line, mark_data)
-            end
-          end
-          break
-        end
-      end
-    end
-  end
+  -- Extmarks will be created by load_buffer_marks when buffers are loaded
 end
 
 function M.get_marks_data()
   return file_marks_data
+end
+
+-- Reset loaded state for a buffer to allow re-loading marks (e.g., after :e)
+function M.reset_buffer_loaded(bufnr)
+  local file_path = vim.api.nvim_buf_get_name(bufnr)
+  if file_path ~= "" then
+    local buffer_key = bufnr .. ":" .. file_path
+    loaded_buffers[buffer_key] = nil
+  end
 end
 
 -- Load marks for a specific buffer from saved data
@@ -491,9 +508,50 @@ function M.load_buffer_marks(bufnr)
     buffer_extmarks[bufnr] = {}
   end
 
+  -- Get all buffer lines for hash matching
+  local buffer_lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+
+  local position_changed = false
+
   -- Restore marks
   for _, mark_data in ipairs(file_marks) do
-    create_extmark(bufnr, mark_data.line, mark_data)
+    local resolved_line = mark_data.line
+
+    -- Try to find line by content_hash if available
+    if mark_data.content_hash then
+      local matching_lines = {}
+      for i, line_content in ipairs(buffer_lines) do
+        if get_line_hash(line_content) == mark_data.content_hash then
+          table.insert(matching_lines, i)
+        end
+      end
+
+      if #matching_lines > 0 then
+        -- Find the line closest to the original line number
+        local closest_line = matching_lines[1]
+        local min_distance = math.abs(closest_line - mark_data.line)
+        for _, line_num in ipairs(matching_lines) do
+          local distance = math.abs(line_num - mark_data.line)
+          if distance < min_distance then
+            min_distance = distance
+            closest_line = line_num
+          end
+        end
+        resolved_line = closest_line
+        if mark_data.line ~= resolved_line then
+          mark_data.line = resolved_line
+          position_changed = true
+        end
+      end
+    end
+
+    create_extmark(bufnr, resolved_line, mark_data)
+  end
+
+  -- Save to JSON file if position changed
+  if position_changed then
+    local storage = require("fusen.storage")
+    storage.save()
   end
 end
 

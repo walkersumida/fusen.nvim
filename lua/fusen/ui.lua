@@ -360,15 +360,18 @@ end
 function M.setup_autocmds()
   local group = vim.api.nvim_create_augroup("FusenUI", { clear = true })
 
-  vim.api.nvim_create_autocmd({ "BufRead", "BufEnter" }, {
+  vim.api.nvim_create_autocmd({ "BufRead", "BufEnter", "FileChangedShellPost" }, {
     group = group,
     callback = function(args)
       local config = require("fusen.config").get()
       if not config.enabled then
         return
       end
-      -- Load marks for this buffer if not already loaded
       local marks = require("fusen.marks")
+      -- BufRead/FileChangedShellPost: reset loaded state to allow hash matching on file reload
+      if args.event == "BufRead" or args.event == "FileChangedShellPost" then
+        marks.reset_buffer_loaded(args.buf)
+      end
       marks.load_buffer_marks(args.buf)
       M.refresh_buffer(args.buf)
     end,
