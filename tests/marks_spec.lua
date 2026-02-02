@@ -638,6 +638,56 @@ describe("fusen.marks", function()
       local buffer_marks = marks.get_buffer_marks(mock_bufnr)
       assert.are.equal(0, #buffer_marks)
     end)
+
+    it("should resolve to closest line when multiple lines have same content_hash", function()
+      -- Store original nvim_buf_get_lines
+      local original_nvim_buf_get_lines = vim.api.nvim_buf_get_lines
+
+      -- Mock nvim_buf_get_lines to return lines with duplicate content
+      vim.api.nvim_buf_get_lines = function(bufnr, start_line, end_line, strict)
+        return { "a", "b", "b", "c" } -- Line 2 and 3 both have "b"
+      end
+
+      -- Mock storage.save to prevent file write (position changes trigger save)
+      local storage = require("fusen.storage")
+      local original_storage_save = storage.save
+      storage.save = function()
+        return true
+      end
+
+      -- Generate hash for "b" using the same algorithm as marks.lua
+      local b_hash = vim.fn.sha256("b"):sub(1, 16)
+
+      local test_data = {
+        [mock_file_path] = {
+          [mock_branch] = {
+            -- Mark originally at line 1, but content_hash is for "b" (lines 2 and 3)
+            -- Should move to line 2 (closest to original line 1)
+            { line = 1, annotation = "mark moved to closest b", created_at = 9999, content_hash = b_hash },
+          },
+        },
+      }
+
+      marks.set_marks_data(test_data)
+      marks.load_buffer_marks(mock_bufnr)
+
+      -- Mark should have moved to line 2 (closest to original line 1), not line 3
+      local mark_at_2 = marks.get_mark(mock_bufnr, 2)
+      assert.is_not_nil(mark_at_2)
+      assert.are.equal("mark moved to closest b", mark_at_2.annotation)
+
+      -- Original line 1 should have no mark
+      local mark_at_1 = marks.get_mark(mock_bufnr, 1)
+      assert.is_nil(mark_at_1)
+
+      -- Line 3 should also have no mark (line 2 is closer)
+      local mark_at_3 = marks.get_mark(mock_bufnr, 3)
+      assert.is_nil(mark_at_3)
+
+      -- Restore original functions
+      vim.api.nvim_buf_get_lines = original_nvim_buf_get_lines
+      storage.save = original_storage_save
+    end)
   end)
 
   describe("cleanup_closed_buffers", function()
@@ -645,6 +695,13 @@ describe("fusen.marks", function()
       local valid_bufnr = 1
       local invalid_bufnr = 999
       local invalid_file_path = "/tmp/invalid_file.lua"
+
+      -- Mock storage.save to prevent file write
+      local storage = require("fusen.storage")
+      local original_storage_save = storage.save
+      storage.save = function()
+        return true
+      end
 
       -- Temporarily override buf_get_name to support both buffers
       local original_buf_get_name = vim.api.nvim_buf_get_name
@@ -696,6 +753,7 @@ describe("fusen.marks", function()
       -- Restore original functions
       vim.api.nvim_buf_get_name = original_buf_get_name
       vim.api.nvim_buf_is_valid = original_buf_is_valid
+      storage.save = original_storage_save
     end)
   end)
 end)
