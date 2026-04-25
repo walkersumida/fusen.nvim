@@ -73,7 +73,7 @@ end
 function M.setup_autocmds()
   local group = vim.api.nvim_create_augroup("FusenGit", { clear = true })
 
-  vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained" }, {
+  vim.api.nvim_create_autocmd("BufEnter", {
     group = group,
     callback = function()
       branch_cache.last_check = 0
@@ -82,6 +82,26 @@ function M.setup_autocmds()
       if fusen.refresh_marks then
         fusen.refresh_marks()
       end
+    end,
+  })
+
+  -- FocusGained: only refresh if branch actually changed
+  vim.api.nvim_create_autocmd("FocusGained", {
+    group = group,
+    callback = function()
+      vim.schedule(function()
+        local old_branch = branch_cache.branch
+        branch_cache.last_check = 0
+        local new_branch = M.get_current_branch()
+
+        if old_branch ~= new_branch then
+          branch_cache.branch = new_branch
+          local fusen = require("fusen")
+          if fusen.refresh_marks then
+            fusen.refresh_marks()
+          end
+        end
+      end)
     end,
   })
 
