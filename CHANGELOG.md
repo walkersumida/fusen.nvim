@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/walkersumida/fusen.nvim/compare/v0.7.1...v0.7.2) (2026-04-25)
+
+
+### Performance Improvements
+
+* reduce FocusGained delay by skipping unnecessary reloads ([#25](https://github.com/walkersumida/fusen.nvim/issues/25)) ([7241461](https://github.com/walkersumida/fusen.nvim/commit/72414619cc7ee91d562ca94c3778015104cbdbce))
+
 ## [0.7.1](https://github.com/walkersumida/fusen.nvim/compare/v0.7.0...v0.7.1) (2025-11-28)
 
 
