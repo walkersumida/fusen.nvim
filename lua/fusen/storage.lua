@@ -1,5 +1,8 @@
 local M = {}
 
+-- Track file modified time to skip reload when unchanged
+local last_modified_time = 0
+
 local function get_save_file()
   local config = require("fusen.config").get()
   return config.save_file
@@ -53,12 +56,28 @@ function M.save()
   local current_marks = marks.get_marks_data()
 
   local save_file = get_save_file()
-  return write_file(save_file, current_marks)
+  local result = write_file(save_file, current_marks)
+
+  -- Update modified time after save so FocusGained doesn't reload our own writes
+  if result then
+    local stat = vim.loop.fs_stat(save_file)
+    if stat then
+      last_modified_time = stat.mtime.sec
+    end
+  end
+
+  return result
 end
 
 function M.load()
   local marks = require("fusen.marks")
   local save_file = get_save_file()
+
+  -- Record modified time so the first FocusGained doesn't reload unnecessarily
+  local stat = vim.loop.fs_stat(save_file)
+  if stat then
+    last_modified_time = stat.mtime.sec
+  end
 
   local data = read_file(save_file)
   if not data then
@@ -74,17 +93,26 @@ end
 function M.setup_autocmds()
   local group = vim.api.nvim_create_augroup("FusenStorage", { clear = true })
 
-  -- Optional: Reload marks when Neovim gains focus (for multi-instance sync)
+  -- Reload marks when Neovim gains focus (for multi-instance sync)
+  -- Only reloads if the JSON file was modified externally
   vim.api.nvim_create_autocmd({ "FocusGained" }, {
     group = group,
     callback = function()
-      -- Reload marks from file to get changes from other instances
-      local existing_data = read_file(get_save_file())
-      if existing_data then
-        local marks = require("fusen.marks")
-        marks.set_marks_data(existing_data)
-        require("fusen.ui").refresh_all_buffers()
-      end
+      vim.schedule(function()
+        local save_file = get_save_file()
+        local stat = vim.loop.fs_stat(save_file)
+        if not stat or stat.mtime.sec <= last_modified_time then
+          return
+        end
+        last_modified_time = stat.mtime.sec
+
+        local existing_data = read_file(save_file)
+        if existing_data then
+          local marks = require("fusen.marks")
+          marks.set_marks_data(existing_data)
+          require("fusen.ui").refresh_all_buffers()
+        end
+      end)
     end,
   })
 end
