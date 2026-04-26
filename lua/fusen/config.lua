@@ -11,6 +11,7 @@ M.defaults = {
   keymaps = {
     add_mark = "me",
     clear_mark = "mc",
+    toggle_mark = "mt",
     clear_buffer = "mC",
     clear_all = "mD",
     next_mark = "mn",
