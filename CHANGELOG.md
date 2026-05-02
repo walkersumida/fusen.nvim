@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/walkersumida/fusen.nvim/compare/v0.7.2...v0.8.0) (2026-05-02)
+
+
+### Features
+
+* Toggle mark (without confirmation) ([#27](https://github.com/walkersumida/fusen.nvim/issues/27)) ([6a39bef](https://github.com/walkersumida/fusen.nvim/commit/6a39bef8806bca0bfda8c20ec88a2843a2735e5c))
+
 ## [0.7.2](https://github.com/walkersumida/fusen.nvim/compare/v0.7.1...v0.7.2) (2026-04-25)
 
 
