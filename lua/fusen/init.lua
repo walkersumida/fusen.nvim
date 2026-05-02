@@ -236,19 +236,20 @@ function M.toggle_mark()
   end
 
   local mark = marks.get_mark(bufnr, line)
-  local action = mark and "Removed" or "Added"
 
   if mark then
     marks.remove_mark(bufnr, line)
+    ui.refresh_buffer(bufnr)
+    storage.save()
+    vim.notify("Removed mark", vim.log.levels.INFO)
   else
     ui.input_annotation(bufnr, line, function(annotation)
       marks.add_mark(bufnr, line, annotation)
+      ui.refresh_buffer(bufnr)
+      storage.save()
+      vim.notify("Added mark", vim.log.levels.INFO)
     end)
   end
-
-  ui.refresh_buffer(bufnr)
-  storage.save()
-  vim.notify(action .. " mark", vim.log.levels.INFO)
 end
 
 function M.clear_buffer()
