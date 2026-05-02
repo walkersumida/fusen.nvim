@@ -74,11 +74,16 @@ Default configuration: >lua
       keymaps = {
         add_mark = "me",
         clear_mark = "mc",
+        toggle_mark = "mt",
         clear_buffer = "mC",
         clear_all = "mD",
         next_mark = "mn",
         prev_mark = "mp",
         list_marks = "ml",
+      },
+
+      toggle_mark = {
+        skip_confirm = false,
       },
       
       telescope = {
@@ -160,6 +165,13 @@ Configuration options:
     special buffers where you don't want Fusen keymaps to be active.
     Examples: "neo-tree", "NvimTree", "nerdtree"
 
+`toggle_mark`                                               *fusen-opt-toggle_mark*
+    Settings for toggle mark behavior.
+
+    `skip_confirm`                              *fusen-opt-toggle_mark-skip_confirm*
+        Skip confirmation dialog when removing a mark via toggle.
+        Default: false
+
 `enabled`                                                     *fusen-opt-enabled*
     Whether Fusen plugin is enabled. When disabled, all marks and annotations
     are hidden and all operations are blocked. Data is kept in memory.
@@ -194,6 +206,11 @@ COMMANDS                                                     *fusen-commands*
 
 :FusenClearMark                                             *:FusenClearMark*
     Clear sticky note at current line.
+
+:FusenToggleMark                                           *:FusenToggleMark*
+    Toggle sticky note at current line. If a mark exists, remove it
+    (with confirmation by default). If no mark exists, add one with
+    annotation input.
 
 :FusenClearBuffer                                         *:FusenClearBuffer*
     Clear all sticky notes in current buffer.
@@ -249,6 +266,9 @@ Default mappings:
 `mc`                                                        *fusen-map-clear*
     Clear mark at current line.
 
+`mt`                                                       *fusen-map-toggle*
+    Toggle mark at current line.
+
 `mC`                                                  *fusen-map-clear-buffer*
     Clear all marks in current buffer.
 
@@ -275,6 +295,11 @@ require("fusen").add_mark()                              *fusen.add_mark()*
 
 require("fusen").clear_mark()                          *fusen.clear_mark()*
     Clear mark at current line.
+
+require("fusen").toggle_mark()                        *fusen.toggle_mark()*
+    Toggle mark at current line. Adds a mark if none exists, removes
+    it (with confirmation) if one does. Set `toggle_mark.skip_confirm`
+    to skip the confirmation dialog.
 
 require("fusen").clear_buffer()                        *fusen.clear_buffer()*
     Clear all marks in current buffer.

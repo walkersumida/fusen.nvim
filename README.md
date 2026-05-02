@@ -120,11 +120,17 @@ require("fusen").setup()  -- Add options here if needed
     keymaps = {
       add_mark = "me",        -- Add/edit sticky note
       clear_mark = "mc",      -- Clear mark at current line
+      toggle_mark = "mt",     -- Toggle mark at current line
       clear_buffer = "mC",    -- Clear all marks in buffer
       clear_all = "mD",       -- Clear ALL marks (deletes entire JSON content)
       next_mark = "mn",       -- Jump to next mark
       prev_mark = "mp",       -- Jump to previous mark
       list_marks = "ml",      -- Show marks in quickfix
+    },
+
+    -- Toggle mark settings
+    toggle_mark = {
+      skip_confirm = false,   -- Skip confirmation when removing mark via toggle
     },
 
     -- Telescope integration settings
@@ -208,6 +214,7 @@ All default mappings start with `m` prefix for consistency:
 |-----|-------------|
 | `me` | Add or edit sticky note with annotation |
 | `mc` | Clear sticky note at current line |
+| `mt` | Toggle mark at current line (add/remove) |
 | `mC` | Clear all sticky notes in current buffer |
 | `mD` | Clear ALL sticky notes (deletes entire JSON content) |
 | `mn` | Jump to next sticky note |
@@ -220,6 +227,7 @@ All default mappings start with `m` prefix for consistency:
 |---------|-------------|
 | `:FusenAddMark` | Add or edit sticky note with annotation |
 | `:FusenClearMark` | Clear sticky note at current line |
+| `:FusenToggleMark` | Toggle mark at current line (add/remove) |
 | `:FusenClearBuffer` | Clear all marks in current buffer |
 | `:FusenClearAll` | Clear ALL marks (deletes entire JSON content) |
 | `:FusenNext` | Jump to next mark |

@@ -11,11 +11,16 @@ M.defaults = {
   keymaps = {
     add_mark = "me",
     clear_mark = "mc",
+    toggle_mark = "mt",
     clear_buffer = "mC",
     clear_all = "mD",
     next_mark = "mn",
     prev_mark = "mp",
     list_marks = "ml",
+  },
+
+  toggle_mark = {
+    skip_confirm = false, -- Skip confirmation when removing mark via toggle
   },
 
   telescope = {

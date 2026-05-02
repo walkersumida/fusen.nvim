@@ -224,6 +224,41 @@ function M.clear_mark()
   end
 end
 
+function M.toggle_mark()
+  if not check_enabled() then
+    return
+  end
+
+  local bufnr, file_path, line, err = get_current_buffer_info()
+  if err then
+    vim.notify(err, vim.log.levels.WARN)
+    return
+  end
+
+  local mark = marks.get_mark(bufnr, line)
+
+  if mark then
+    local cfg = config.get()
+    if not cfg.toggle_mark.skip_confirm then
+      local confirmed = confirm_action(string.format("Delete mark at line %d? (y/N)", line))
+      if not confirmed then
+        return
+      end
+    end
+    marks.remove_mark(bufnr, line)
+    ui.refresh_buffer(bufnr)
+    storage.save()
+    vim.notify("Removed mark", vim.log.levels.INFO)
+  else
+    ui.input_annotation(bufnr, line, function(annotation)
+      marks.add_mark(bufnr, line, annotation)
+      ui.refresh_buffer(bufnr)
+      storage.save()
+      vim.notify("Added mark", vim.log.levels.INFO)
+    end)
+  end
+end
+
 function M.clear_buffer()
   if not check_enabled() then
     return
@@ -319,6 +354,7 @@ local function setup_buffer_keymaps(bufnr)
 
   vim.keymap.set("n", keymaps.add_mark, M.add_mark, opts)
   vim.keymap.set("n", keymaps.clear_mark, M.clear_mark, opts)
+  vim.keymap.set("n", keymaps.toggle_mark, M.toggle_mark, opts)
   vim.keymap.set("n", keymaps.clear_buffer, M.clear_buffer, opts)
   vim.keymap.set("n", keymaps.clear_all, M.clear_all, opts)
   vim.keymap.set("n", keymaps.next_mark, M.next_mark, opts)
@@ -374,6 +410,10 @@ function M.setup_commands()
 
   vim.api.nvim_create_user_command("FusenClearMark", function()
     M.clear_mark()
+  end, {})
+
+  vim.api.nvim_create_user_command("FusenToggleMark", function()
+    M.toggle_mark()
   end, {})
 
   vim.api.nvim_create_user_command("FusenClearBuffer", function()
