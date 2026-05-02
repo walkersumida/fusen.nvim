@@ -238,6 +238,13 @@ function M.toggle_mark()
   local mark = marks.get_mark(bufnr, line)
 
   if mark then
+    local cfg = config.get()
+    if not cfg.toggle_mark.skip_confirm then
+      local confirmed = confirm_action(string.format("Delete mark at line %d? (y/N)", line))
+      if not confirmed then
+        return
+      end
+    end
     marks.remove_mark(bufnr, line)
     ui.refresh_buffer(bufnr)
     storage.save()

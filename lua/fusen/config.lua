@@ -19,6 +19,10 @@ M.defaults = {
     list_marks = "ml",
   },
 
+  toggle_mark = {
+    skip_confirm = false, -- Skip confirmation when removing mark via toggle
+  },
+
   telescope = {
     keymaps = {
       delete_mark_insert = "<C-d>",

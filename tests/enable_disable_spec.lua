@@ -154,6 +154,15 @@ describe("fusen enable/disable/toggle", function()
       assert.are.equal(vim.log.levels.WARN, captured_notify_level)
     end)
 
+    it("should block toggle_mark when disabled", function()
+      -- Act
+      fusen.toggle_mark()
+
+      -- Assert
+      assert.are.equal("Fusen is currently disabled", captured_notify_msg)
+      assert.are.equal(vim.log.levels.WARN, captured_notify_level)
+    end)
+
     it("should block clear_all when disabled", function()
       -- Act
       fusen.clear_all()
