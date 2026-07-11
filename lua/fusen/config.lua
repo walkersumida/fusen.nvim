@@ -17,6 +17,16 @@ M.defaults = {
     next_mark = "mn",
     prev_mark = "mp",
     list_marks = "ml",
+    yank_line = "my",
+    yank_buffer = "mY",
+    yank_all = "mA",
+  },
+
+  yank = {
+    -- Template for each mark. Placeholders: {path} {file} {line} {annotation}
+    template = '- @{path}:L{line} - "{annotation}"',
+    -- Used instead when the mark has no annotation
+    template_no_annotation = "- @{path}:L{line}",
   },
 
   toggle_mark = {
