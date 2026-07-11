@@ -27,6 +27,7 @@ Key features:
 - Telescope integration for searching
 - Fast navigation between bookmarks
 - Quickfix list support
+- Yank marks to clipboard with customizable templates
 
 ==============================================================================
 INSTALLATION                                                   *fusen-install*
@@ -80,6 +81,14 @@ Default configuration: >lua
         next_mark = "mn",
         prev_mark = "mp",
         list_marks = "ml",
+        yank_line = "my",
+        yank_buffer = "mY",
+        yank_all = "mA",
+      },
+
+      yank = {
+        template = '- @{path}:L{line} - "{annotation}"',
+        template_no_annotation = "- @{path}:L{line}",
       },
 
       toggle_mark = {
@@ -165,6 +174,22 @@ Configuration options:
     special buffers where you don't want Fusen keymaps to be active.
     Examples: "neo-tree", "NvimTree", "nerdtree"
 
+`yank`                                                           *fusen-opt-yank*
+    Settings for yanking marks to the clipboard.
+
+    `template`                                          *fusen-opt-yank-template*
+        Template applied to each mark. Available placeholders:
+        - {path}: file path relative to the current working directory
+        - {file}: absolute file path
+        - {line}: line number
+        - {annotation}: sticky note text
+        Unknown placeholders are kept as-is.
+        Default: `- @{path}:L{line} - "{annotation}"`
+
+    `template_no_annotation`              *fusen-opt-yank-template_no_annotation*
+        Template used instead when the mark has no annotation.
+        Default: `- @{path}:L{line}`
+
 `toggle_mark`                                               *fusen-opt-toggle_mark*
     Settings for toggle mark behavior.
 
@@ -227,6 +252,16 @@ COMMANDS                                                     *fusen-commands*
 :FusenList                                                       *:FusenList*
     Show all sticky notes in quickfix list.
 
+:FusenYank [scope]                                               *:FusenYank*
+    Yank marks to the system clipboard (`+` register), formatted with the
+    configured template (see |fusen-opt-yank|). Scope is one of:
+    - `line` (default): mark at the cursor line
+    - `buffer`: marks in the current buffer
+    - `all`: all marks in the project
+
+    Requires a clipboard provider (see |clipboard|). When no provider is
+    available, a warning is shown and nothing is copied.
+
 :FusenRefresh                                                 *:FusenRefresh*
     Refresh display of all sticky notes.
 
@@ -284,6 +319,15 @@ Default mappings:
 `ml`                                                          *fusen-map-list*
     Show marks in quickfix list.
 
+`my`                                                     *fusen-map-yank-line*
+    Yank mark at cursor line to clipboard.
+
+`mY`                                                   *fusen-map-yank-buffer*
+    Yank marks in current buffer to clipboard.
+
+`mA`                                                      *fusen-map-yank-all*
+    Yank all marks in project to clipboard.
+
 ==============================================================================
 FUNCTIONS                                                   *fusen-functions*
 
@@ -315,6 +359,10 @@ require("fusen").prev_mark()                              *fusen.prev_mark()*
 
 require("fusen").list_marks()                            *fusen.list_marks()*
     Show all marks in quickfix list.
+
+require("fusen").yank_marks({scope})                      *fusen.yank_marks()*
+    Yank marks to the system clipboard. {scope} is "line" (default),
+    "buffer" or "all". See |:FusenYank|.
 
 require("fusen").refresh_marks()                      *fusen.refresh_marks()*
     Refresh display of all marks.

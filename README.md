@@ -46,6 +46,7 @@ https://github.com/user-attachments/assets/4ebcb70b-0be8-4668-8a65-2eb5c950aec4
 - 🔍 **Telescope integration** - Search and navigate through all your sticky notes
 - ⚡ **Fast navigation** - Jump between sticky notes quickly
 - 📋 **Quickfix list support** - View all sticky notes in a quickfix list
+- 📎 **Yank to clipboard** - Copy sticky notes (path, line, note) to paste into AI chats or anywhere else
 
 ## 📦 Installation
 
@@ -126,6 +127,17 @@ require("fusen").setup()  -- Add options here if needed
       next_mark = "mn",       -- Jump to next mark
       prev_mark = "mp",       -- Jump to previous mark
       list_marks = "ml",      -- Show marks in quickfix
+      yank_line = "my",       -- Yank mark at cursor line to clipboard
+      yank_buffer = "mY",     -- Yank marks in current buffer to clipboard
+      yank_all = "mA",        -- Yank all marks in project to clipboard
+    },
+
+    -- Yank to clipboard settings
+    yank = {
+      -- Template for each mark. Placeholders: {path} {file} {line} {annotation}
+      template = '- @{path}:L{line} - "{annotation}"',
+      -- Used instead when the mark has no annotation
+      template_no_annotation = "- @{path}:L{line}",
     },
 
     -- Toggle mark settings
@@ -220,6 +232,9 @@ All default mappings start with `m` prefix for consistency:
 | `mn` | Jump to next sticky note |
 | `mp` | Jump to previous sticky note |
 | `ml` | List all sticky notes in quickfix |
+| `my` | Yank sticky note at cursor line to clipboard |
+| `mY` | Yank sticky notes in current buffer to clipboard |
+| `mA` | Yank all sticky notes in project to clipboard |
 
 ### Commands
 
@@ -233,6 +248,7 @@ All default mappings start with `m` prefix for consistency:
 | `:FusenNext` | Jump to next mark |
 | `:FusenPrev` | Jump to previous mark |
 | `:FusenList` | Show all marks in quickfix list |
+| `:FusenYank [line\|buffer\|all]` | Yank marks to clipboard (default: `line`) |
 | `:FusenRefresh` | Refresh all marks display |
 | `:FusenSave` | Manually save marks |
 | `:FusenLoad` | Manually load marks |
@@ -242,6 +258,49 @@ All default mappings start with `m` prefix for consistency:
 | `:FusenEnable` | Enable Fusen plugin (show marks and annotations) |
 | `:FusenDisable` | Disable Fusen plugin (hide all marks and annotations) |
 | `:FusenToggle` | Toggle Fusen on/off |
+
+### Yank to Clipboard
+
+Copy your sticky notes to the system clipboard (`+` register) and paste them anywhere — AI chats, issues, code review comments, etc.
+
+> **Note:** This requires a clipboard provider (see `:help clipboard`). macOS works out of the box; on Linux install `xclip`, `xsel` or `wl-clipboard`. Without a provider, a warning is shown and nothing is copied.
+
+```
+:FusenYank          " Mark at cursor line (same as `my`)
+:FusenYank buffer   " Marks in current buffer (same as `mY`)
+:FusenYank all      " All marks in project (same as `mA`)
+```
+
+Each mark is formatted with a customizable template:
+
+```lua
+-- Using lazy.nvim
+{
+  "walkersumida/fusen.nvim",
+  opts = {
+    yank = {
+      template = '- @{path}:L{line} - "{annotation}"',
+      template_no_annotation = "- @{path}:L{line}",
+    },
+  }
+}
+```
+
+Available placeholders:
+
+| Placeholder | Description |
+|-------------|-------------|
+| `{path}` | File path relative to the current working directory |
+| `{file}` | Absolute file path |
+| `{line}` | Line number |
+| `{annotation}` | Sticky note text |
+
+With the default template, the copied text looks like:
+
+```
+- @lua/fusen/init.lua:L42 - "TODO: refactor this function"
+- @lua/fusen/ui.lua:L15 - "This layout breaks on narrow windows"
+```
 
 ### Telescope Integration
 
