@@ -11,6 +11,14 @@ https://github.com/user-attachments/assets/4ebcb70b-0be8-4668-8a65-2eb5c950aec4
 
 <table>
   <tr>
+    <th>Handing sticky notes to your AI assistant</th>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://github.com/user-attachments/assets/5b3d005e-8e3d-4121-be9a-18bb6037bde9" />
+    </td>
+  </tr>
+  <tr>
     <th>Adding/Editing an annotation</th>
   </tr>
   <tr>
@@ -38,6 +46,7 @@ https://github.com/user-attachments/assets/4ebcb70b-0be8-4668-8a65-2eb5c950aec4
 
 ## ✨ Features
 
+- 🤖 **AI-friendly yank** - Hand all your sticky notes to AI assistants (Claude Code, Copilot CLI, etc.) in one keystroke
 - 📝 **Simple sticky notes** - Clean and minimalist sticky note system
 - 🌳 **Git branch awareness** - Sticky notes are stored per git branch
 - 💾 **Persistent storage** - Your sticky notes are saved between sessions
@@ -46,7 +55,6 @@ https://github.com/user-attachments/assets/4ebcb70b-0be8-4668-8a65-2eb5c950aec4
 - 🔍 **Telescope integration** - Search and navigate through all your sticky notes
 - ⚡ **Fast navigation** - Jump between sticky notes quickly
 - 📋 **Quickfix list support** - View all sticky notes in a quickfix list
-- 📎 **Yank to clipboard** - Copy sticky notes (path, line, note) to paste into AI chats or anywhere else
 
 ## 📦 Installation
 
