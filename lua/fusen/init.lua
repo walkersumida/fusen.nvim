@@ -320,6 +320,16 @@ function M.list_marks()
   ui.create_quickfix_list()
 end
 
+-- Copy marks to the system clipboard.
+-- scope: "line" (default, mark at cursor) | "buffer" | "all"
+function M.yank_marks(scope)
+  if not check_enabled() then
+    return
+  end
+
+  require("fusen.yank").yank(scope or "line")
+end
+
 function M.open_save_file()
   local save_file = config.get().save_file
   vim.cmd.edit(save_file)
@@ -360,6 +370,15 @@ local function setup_buffer_keymaps(bufnr)
   vim.keymap.set("n", keymaps.next_mark, M.next_mark, opts)
   vim.keymap.set("n", keymaps.prev_mark, M.prev_mark, opts)
   vim.keymap.set("n", keymaps.list_marks, M.list_marks, opts)
+  vim.keymap.set("n", keymaps.yank_line, function()
+    M.yank_marks("line")
+  end, opts)
+  vim.keymap.set("n", keymaps.yank_buffer, function()
+    M.yank_marks("buffer")
+  end, opts)
+  vim.keymap.set("n", keymaps.yank_all, function()
+    M.yank_marks("all")
+  end, opts)
 end
 
 function M.setup_keymaps()
@@ -435,6 +454,18 @@ function M.setup_commands()
   vim.api.nvim_create_user_command("FusenList", function()
     M.list_marks()
   end, {})
+
+  vim.api.nvim_create_user_command("FusenYank", function(cmd_opts)
+    local scope = vim.trim(cmd_opts.args)
+    M.yank_marks(scope ~= "" and scope or nil)
+  end, {
+    nargs = "?",
+    complete = function(arg_lead)
+      return vim.tbl_filter(function(scope)
+        return vim.startswith(scope, arg_lead)
+      end, require("fusen.yank").scopes)
+    end,
+  })
 
   vim.api.nvim_create_user_command("FusenRefresh", function()
     M.refresh_marks()
