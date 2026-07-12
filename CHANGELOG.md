@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/walkersumida/fusen.nvim/compare/v0.8.0...v0.9.0) (2026-07-12)
+
+
+### Features
+
+* yank marks to clipboard - hand your sticky notes to your AI assistant ([#29](https://github.com/walkersumida/fusen.nvim/issues/29)) ([9df4900](https://github.com/walkersumida/fusen.nvim/commit/9df4900d2b8f22406cf31b629457ca660fa00c1d))
+
 ## [0.8.0](https://github.com/walkersumida/fusen.nvim/compare/v0.7.2...v0.8.0) (2026-05-02)
 
 
