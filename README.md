@@ -2,7 +2,7 @@
 
 A sticky notes plugin for Neovim with git branch awareness. Place sticky notes (fusen - 付箋 in Japanese) in your code and keep them organized across different git branches.
 
-![Neovim](https://img.shields.io/badge/Neovim-0.7+-green.svg)
+![Neovim](https://img.shields.io/badge/Neovim-0.8+-green.svg)
 ![Lua](https://img.shields.io/badge/Lua-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 [![Tests](https://github.com/walkersumida/fusen.nvim/actions/workflows/test.yml/badge.svg)](https://github.com/walkersumida/fusen.nvim/actions/workflows/test.yml)
@@ -54,7 +54,7 @@ https://github.com/user-attachments/assets/4ebcb70b-0be8-4668-8a65-2eb5c950aec4
 - 🎈 **Float window display** - Show annotations in floating windows on cursor hover
 - 🔍 **Telescope integration** - Search and navigate through all your sticky notes
 - ⚡ **Fast navigation** - Jump between sticky notes quickly
-- 📋 **Quickfix list support** - View all sticky notes in a quickfix list
+- 📋 **Quickfix list support** - View all sticky notes in the current project in a quickfix list
 
 ## 📦 Installation
 
@@ -239,7 +239,7 @@ All default mappings start with `m` prefix for consistency:
 | `mD` | Clear ALL sticky notes (deletes entire JSON content) |
 | `mn` | Jump to next sticky note |
 | `mp` | Jump to previous sticky note |
-| `ml` | List all sticky notes in quickfix |
+| `ml` | List all sticky notes in current project in quickfix |
 | `my` | Yank sticky note at cursor line to clipboard |
 | `mY` | Yank sticky notes in current buffer to clipboard |
 | `mA` | Yank all sticky notes in project to clipboard |
@@ -255,7 +255,7 @@ All default mappings start with `m` prefix for consistency:
 | `:FusenClearAll` | Clear ALL marks (deletes entire JSON content) |
 | `:FusenNext` | Jump to next mark |
 | `:FusenPrev` | Jump to previous mark |
-| `:FusenList` | Show all marks in quickfix list |
+| `:FusenList` | Show all marks in current project in quickfix list |
 | `:FusenYank [line\|buffer\|all]` | Yank marks to clipboard (default: `line`) |
 | `:FusenRefresh` | Refresh all marks display |
 | `:FusenSave` | Manually save marks |

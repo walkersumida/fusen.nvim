@@ -27,20 +27,23 @@ local function get_mark_key(file_path, branch)
   return branch
 end
 
--- Resolve the current project root: git root when inside a repo,
--- otherwise fall back to the current working directory.
-local function get_project_root()
-  local _, git_root = git.get_branch_info()
-  return git_root or vim.fn.getcwd()
+-- Canonicalize a path for comparison: resolve symlinks and normalize
+-- separators. Git returns symlink-resolved, forward-slashed paths while
+-- buffer names may keep the logical path (or backslashes on Windows).
+local function canonicalize(path)
+  return vim.fs.normalize(vim.fn.resolve(path))
 end
 
 -- True when file_path equals the project root or lies underneath it.
--- The appended separator prevents "/foo/bar" from matching "/foo/barbaz".
+-- project_root must already be canonicalized; file_path is canonicalized
+-- here. The appended separator prevents "/foo/bar" from matching
+-- "/foo/barbaz".
 local function is_in_project(file_path, project_root)
-  if not project_root or project_root == "" then
-    return true -- no project information; do not filter
+  if not project_root then
+    return true -- outside a git repo marks are global; do not filter
   end
-  return file_path == project_root or vim.startswith(file_path, project_root .. "/")
+  local path = canonicalize(file_path)
+  return path == project_root or vim.startswith(path, project_root .. "/")
 end
 
 -- Initialize mark structure for file and branch
@@ -348,11 +351,15 @@ end
 
 function M.get_marks(current_branch)
   local all_marks = {}
-  local branch = current_branch or git.get_current_branch()
+  -- Take branch and git root from a single snapshot: one cached call
+  -- avoids extra git subprocesses and a branch/root mismatch.
+  local snapshot_branch, git_root = git.get_branch_info()
+  local branch = current_branch or snapshot_branch
   local branch_key = get_mark_key(nil, branch)
   -- Scope aggregate views to the current project so that repos sharing a
-  -- branch name do not leak marks into each other.
-  local project_root = get_project_root()
+  -- branch name do not leak marks into each other. Outside a git repo
+  -- git_root is nil and global marks are shown regardless of directory.
+  local project_root = git_root and canonicalize(git_root)
 
   for file_path, branch_data in pairs(file_marks_data) do
     if is_in_project(file_path, project_root) and branch_data[branch_key] then
@@ -468,6 +475,9 @@ function M.set_marks_data(data)
   end
 end
 
+-- Returns the raw data for ALL projects and branches. Storage must persist
+-- this unfiltered table; building it from the project-scoped get_marks()
+-- would drop other projects' marks from the shared save file.
 function M.get_marks_data()
   return file_marks_data
 end

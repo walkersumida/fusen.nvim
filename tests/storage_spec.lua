@@ -247,6 +247,39 @@ describe("fusen.storage", function()
       assert.is_false(result)
     end)
 
+    it("should persist marks for ALL projects, not the project-scoped view", function()
+      mock_marks_data = {
+        ["/tmp/project_a/file.lua"] = {
+          ["main"] = {
+            { line = 10, annotation = "project a mark", created_at = 111 },
+          },
+        },
+        ["/tmp/project_b/file.lua"] = {
+          ["main"] = {
+            { line = 20, annotation = "project b mark", created_at = 222 },
+          },
+        },
+      }
+
+      -- Simulate the project-scoped aggregate view (as if project_a is the
+      -- current project). save() must NOT use this filtered view, or other
+      -- projects' marks would be lost on the next write.
+      package.loaded["fusen.marks"].get_marks = function()
+        return {
+          { file = "/tmp/project_a/file.lua", line = 10, annotation = "project a mark" },
+        }
+      end
+
+      local result = storage.save()
+
+      assert.is_true(result)
+      local saved_content = virtual_fs[mock_save_file]
+      local ok, decoded = pcall(vim.json.decode, saved_content)
+      assert.is_true(ok)
+      assert.is_not_nil(decoded["/tmp/project_a/file.lua"])
+      assert.is_not_nil(decoded["/tmp/project_b/file.lua"])
+    end)
+
     it("should handle complex nested data", function()
       mock_marks_data = {
         ["/tmp/file1.lua"] = {

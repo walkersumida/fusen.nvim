@@ -53,6 +53,8 @@ end
 
 function M.save()
   local marks = require("fusen.marks")
+  -- The save file is shared across all projects: always persist the
+  -- unfiltered get_marks_data(), never the project-scoped get_marks()
   local current_marks = marks.get_marks_data()
 
   local save_file = get_save_file()

@@ -210,7 +210,7 @@ Basic workflow:
 1. Navigate to a line in your code
 2. Press `me` to add or edit a sticky note with annotation
 3. Press `mn` or `mp` to navigate between marks
-4. Press `ml` to see all marks in quickfix list
+4. Press `ml` to see all marks in the current project in quickfix list
 
 Git branch awareness:
 When you switch git branches, your sticky notes automatically switch too.
@@ -241,7 +241,8 @@ COMMANDS                                                     *fusen-commands*
     Clear all sticky notes in current buffer.
 
 :FusenClearAll                                               *:FusenClearAll*
-    Clear all sticky notes in project.
+    Clear ALL sticky notes (deletes entire JSON content, including other
+    projects and branches).
 
 :FusenNext                                                       *:FusenNext*
     Jump to next sticky note in buffer.
@@ -250,7 +251,7 @@ COMMANDS                                                     *fusen-commands*
     Jump to previous sticky note in buffer.
 
 :FusenList                                                       *:FusenList*
-    Show all sticky notes in quickfix list.
+    Show all sticky notes in the current project in quickfix list.
 
 :FusenYank [scope]                                               *:FusenYank*
     Yank marks to the system clipboard (`+` register), formatted with the
@@ -308,7 +309,8 @@ Default mappings:
     Clear all marks in current buffer.
 
 `mD`                                                     *fusen-map-clear-all*
-    Clear all marks in project.
+    Clear ALL marks (deletes entire JSON content, including other
+    projects and branches).
 
 `mn`                                                          *fusen-map-next*
     Jump to next mark.
@@ -317,7 +319,7 @@ Default mappings:
     Jump to previous mark.
 
 `ml`                                                          *fusen-map-list*
-    Show marks in quickfix list.
+    Show marks in the current project in quickfix list.
 
 `my`                                                     *fusen-map-yank-line*
     Yank mark at cursor line to clipboard.
@@ -349,7 +351,8 @@ require("fusen").clear_buffer()                        *fusen.clear_buffer()*
     Clear all marks in current buffer.
 
 require("fusen").clear_all()                              *fusen.clear_all()*
-    Clear all marks in project.
+    Clear ALL marks (deletes entire JSON content, including other
+    projects and branches).
 
 require("fusen").next_mark()                              *fusen.next_mark()*
     Jump to next mark in buffer.
@@ -358,7 +361,7 @@ require("fusen").prev_mark()                              *fusen.prev_mark()*
     Jump to previous mark in buffer.
 
 require("fusen").list_marks()                            *fusen.list_marks()*
-    Show all marks in quickfix list.
+    Show all marks in the current project in quickfix list.
 
 require("fusen").yank_marks({scope})                      *fusen.yank_marks()*
     Yank marks to the system clipboard. {scope} is "line" (default),
