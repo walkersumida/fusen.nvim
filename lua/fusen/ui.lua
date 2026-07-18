@@ -72,75 +72,13 @@ local function show_float_window(annotation, opts)
   -- Width is based on longest line, but clamped to [min_width, max_width]
   local width = math.min(max_width, math.max(min_width, longest))
 
-  -- Calculate how many rows a single line needs when wrapped
-  local function calculate_line_rows(line, width_)
-    -- Empty line takes 1 row
-    if line == "" then
-      return 1
-    end
-
-    local line_width = vim.fn.strdisplaywidth(line)
-
-    -- Line fits in one row
-    if line_width <= width_ then
-      return 1
-    end
-
-    -- No spaces (e.g., Japanese text or very long word)
-    if not line:find("%s") then
-      return math.ceil(line_width / width_)
-    end
-
-    -- Has spaces - need word-based wrapping
-    local rows = 1
-    local current_width = 0
-
-    -- Split by whitespace while preserving spaces
-    for word in line:gmatch("%S+") do
-      local word_width = vim.fn.strdisplaywidth(word)
-
-      -- Add space width if not at line start
-      local space_width = current_width > 0 and 1 or 0
-
-      if current_width > 0 and current_width + space_width + word_width > width_ then
-        -- Word doesn't fit on current line
-        rows = rows + 1
-        current_width = word_width
-
-        -- Handle very long words that exceed width
-        while current_width > width_ do
-          rows = rows + 1
-          current_width = current_width - width_
-        end
-      else
-        -- Word fits on current line
-        current_width = current_width + space_width + word_width
-      end
-    end
-
-    return rows
-  end
-
-  -- Calculate wrapped height considering linebreak (word wrap)
-  local function calc_wrapped_height_with_linebreak(lines_, width_)
-    local total = 0
-    for _, line in ipairs(lines_) do
-      total = total + calculate_line_rows(line, width_)
-    end
-    return total
-  end
-
-  -- Calculate height with linebreak consideration
-  local height = calc_wrapped_height_with_linebreak(lines, width)
-  height = math.min(max_height, math.max(min_height, height))
-
-  -- Create floating window
+  -- Provisional height; the exact height is measured after the wrap options are set
   float_win = vim.api.nvim_open_win(float_buf, false, {
     relative = "cursor",
     row = 1,
     col = 0,
     width = width,
-    height = height,
+    height = 1,
     style = "minimal",
     border = float_config.border or "rounded",
   })
@@ -155,6 +93,11 @@ local function show_float_window(annotation, opts)
   if float_config.breakindent then
     vim.api.nvim_win_set_option(float_win, "breakindent", true)
   end
+
+  -- Measure the exact rendered height using Neovim's own wrapping rules
+  local height = vim.api.nvim_win_text_height(float_win, {}).all
+  height = math.min(max_height, math.max(min_height, height))
+  vim.api.nvim_win_set_height(float_win, height)
 
   -- Highlight groups
   vim.api.nvim_win_set_option(float_win, "winhl", "Normal:NormalFloat,FloatBorder:FloatBorder")
