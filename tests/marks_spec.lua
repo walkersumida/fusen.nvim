@@ -3,6 +3,7 @@ describe("fusen.marks", function()
   local mock_bufnr = 1
   local mock_file_path = "/tmp/test_file.lua"
   local mock_branch = "main"
+  local mock_git_root = "/tmp"
   local mock_time = 1234567890
 
   -- Store original functions
@@ -116,9 +117,14 @@ describe("fusen.marks", function()
     end
 
     -- Mock git module
+    mock_branch = "main"
+    mock_git_root = "/tmp"
     package.loaded["fusen.git"] = {
       get_current_branch = function()
         return mock_branch
+      end,
+      get_branch_info = function()
+        return mock_branch, mock_git_root
       end,
     }
 
@@ -696,6 +702,80 @@ describe("fusen.marks", function()
       -- Restore original functions
       vim.api.nvim_buf_get_name = original_buf_get_name
       vim.api.nvim_buf_is_valid = original_buf_is_valid
+    end)
+  end)
+
+  describe("project scoping", function()
+    -- Helper to mock two buffers with the given file paths
+    local function mock_two_buffers(path_a, path_b)
+      local original_buf_get_name = vim.api.nvim_buf_get_name
+      local original_buf_is_valid = vim.api.nvim_buf_is_valid
+
+      vim.api.nvim_buf_get_name = function(bufnr)
+        if bufnr == 1 then
+          return path_a
+        elseif bufnr == 2 then
+          return path_b
+        end
+        return ""
+      end
+      vim.api.nvim_buf_is_valid = function(bufnr)
+        return bufnr == 1 or bufnr == 2
+      end
+
+      return function()
+        vim.api.nvim_buf_get_name = original_buf_get_name
+        vim.api.nvim_buf_is_valid = original_buf_is_valid
+      end
+    end
+
+    it("should not return marks from another project on the same branch", function()
+      local restore = mock_two_buffers("/tmp/project_a/file.lua", "/tmp/project_b/file.lua")
+      mock_git_root = "/tmp/project_a"
+
+      marks.add_mark(1, 10, "mark in project a")
+      marks.add_mark(2, 20, "mark in project b")
+
+      local all_marks = marks.get_marks()
+      assert.are.equal(1, #all_marks)
+      assert.are.equal("/tmp/project_a/file.lua", all_marks[1].file)
+      assert.are.equal(10, all_marks[1].line)
+
+      restore()
+    end)
+
+    it("should not match a sibling directory sharing the root as prefix", function()
+      local restore = mock_two_buffers("/tmp/proj/a.lua", "/tmp/projother/b.lua")
+      mock_git_root = "/tmp/proj"
+
+      marks.add_mark(1, 1, "inside project")
+      marks.add_mark(2, 2, "sibling directory")
+
+      local all_marks = marks.get_marks()
+      assert.are.equal(1, #all_marks)
+      assert.are.equal("/tmp/proj/a.lua", all_marks[1].file)
+
+      restore()
+    end)
+
+    it("should fall back to cwd scoping outside a git repo", function()
+      local cwd = vim.fn.getcwd()
+      local restore = mock_two_buffers(cwd .. "/in_project.lua", "/elsewhere/x.lua")
+      mock_branch = nil
+      mock_git_root = nil
+
+      marks.add_mark(1, 3, "mark under cwd")
+      marks.add_mark(2, 4, "mark elsewhere")
+
+      -- Marks are stored under the "global" key when there is no branch
+      local data = marks.get_marks_data()
+      assert.is_not_nil(data[cwd .. "/in_project.lua"]["global"])
+
+      local all_marks = marks.get_marks()
+      assert.are.equal(1, #all_marks)
+      assert.are.equal(cwd .. "/in_project.lua", all_marks[1].file)
+
+      restore()
     end)
   end)
 end)

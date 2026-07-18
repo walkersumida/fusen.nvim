@@ -27,6 +27,22 @@ local function get_mark_key(file_path, branch)
   return branch
 end
 
+-- Resolve the current project root: git root when inside a repo,
+-- otherwise fall back to the current working directory.
+local function get_project_root()
+  local _, git_root = git.get_branch_info()
+  return git_root or vim.fn.getcwd()
+end
+
+-- True when file_path equals the project root or lies underneath it.
+-- The appended separator prevents "/foo/bar" from matching "/foo/barbaz".
+local function is_in_project(file_path, project_root)
+  if not project_root or project_root == "" then
+    return true -- no project information; do not filter
+  end
+  return file_path == project_root or vim.startswith(file_path, project_root .. "/")
+end
+
 -- Initialize mark structure for file and branch
 local function ensure_mark_structure(file_path, branch_key)
   if not file_marks_data[file_path] then
@@ -334,9 +350,12 @@ function M.get_marks(current_branch)
   local all_marks = {}
   local branch = current_branch or git.get_current_branch()
   local branch_key = get_mark_key(nil, branch)
+  -- Scope aggregate views to the current project so that repos sharing a
+  -- branch name do not leak marks into each other.
+  local project_root = get_project_root()
 
   for file_path, branch_data in pairs(file_marks_data) do
-    if branch_data[branch_key] then
+    if is_in_project(file_path, project_root) and branch_data[branch_key] then
       for _, mark_data in ipairs(branch_data[branch_key]) do
         table.insert(
           all_marks,
