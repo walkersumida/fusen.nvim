@@ -3,6 +3,7 @@ describe("fusen.marks", function()
   local mock_bufnr = 1
   local mock_file_path = "/tmp/test_file.lua"
   local mock_branch = "main"
+  local mock_git_root = "/tmp"
   local mock_time = 1234567890
 
   -- Store original functions
@@ -116,9 +117,14 @@ describe("fusen.marks", function()
     end
 
     -- Mock git module
+    mock_branch = "main"
+    mock_git_root = "/tmp"
     package.loaded["fusen.git"] = {
       get_current_branch = function()
         return mock_branch
+      end,
+      get_branch_info = function()
+        return mock_branch, mock_git_root
       end,
     }
 
@@ -696,6 +702,116 @@ describe("fusen.marks", function()
       -- Restore original functions
       vim.api.nvim_buf_get_name = original_buf_get_name
       vim.api.nvim_buf_is_valid = original_buf_is_valid
+    end)
+  end)
+
+  describe("project scoping", function()
+    -- Helper to mock two buffers with the given file paths
+    local function mock_two_buffers(path_a, path_b)
+      local original_buf_get_name = vim.api.nvim_buf_get_name
+      local original_buf_is_valid = vim.api.nvim_buf_is_valid
+
+      vim.api.nvim_buf_get_name = function(bufnr)
+        if bufnr == 1 then
+          return path_a
+        elseif bufnr == 2 then
+          return path_b
+        end
+        return ""
+      end
+      vim.api.nvim_buf_is_valid = function(bufnr)
+        return bufnr == 1 or bufnr == 2
+      end
+
+      return function()
+        vim.api.nvim_buf_get_name = original_buf_get_name
+        vim.api.nvim_buf_is_valid = original_buf_is_valid
+      end
+    end
+
+    it("should not return marks from another project on the same branch", function()
+      local restore = mock_two_buffers("/tmp/project_a/file.lua", "/tmp/project_b/file.lua")
+      mock_git_root = "/tmp/project_a"
+
+      marks.add_mark(1, 10, "mark in project a")
+      marks.add_mark(2, 20, "mark in project b")
+
+      local all_marks = marks.get_marks()
+      assert.are.equal(1, #all_marks)
+      assert.are.equal("/tmp/project_a/file.lua", all_marks[1].file)
+      assert.are.equal(10, all_marks[1].line)
+
+      restore()
+    end)
+
+    it("should not match a sibling directory sharing the root as prefix", function()
+      local restore = mock_two_buffers("/tmp/proj/a.lua", "/tmp/projother/b.lua")
+      mock_git_root = "/tmp/proj"
+
+      marks.add_mark(1, 1, "inside project")
+      marks.add_mark(2, 2, "sibling directory")
+
+      local all_marks = marks.get_marks()
+      assert.are.equal(1, #all_marks)
+      assert.are.equal("/tmp/proj/a.lua", all_marks[1].file)
+
+      restore()
+    end)
+
+    it("should show global marks everywhere when outside a git repo", function()
+      local restore = mock_two_buffers("/tmp/somewhere/a.lua", "/elsewhere/x.lua")
+      mock_branch = nil
+      mock_git_root = nil
+
+      marks.add_mark(1, 3, "global mark a")
+      marks.add_mark(2, 4, "global mark b")
+
+      -- Marks are stored under the "global" key when there is no branch,
+      -- and global marks are not scoped to any directory
+      local data = marks.get_marks_data()
+      assert.is_not_nil(data["/tmp/somewhere/a.lua"]["global"])
+
+      local all_marks = marks.get_marks()
+      assert.are.equal(2, #all_marks)
+
+      restore()
+    end)
+
+    it("should take branch and root from the same get_branch_info snapshot", function()
+      marks.add_mark(mock_bufnr, 10, "mark on main")
+
+      -- get_marks must use get_branch_info's branch; consulting the
+      -- uncached get_current_branch could pair a fresh branch with a
+      -- stale project root
+      package.loaded["fusen.git"].get_current_branch = function()
+        return "some-other-branch"
+      end
+
+      local all_marks = marks.get_marks()
+      assert.are.equal(1, #all_marks)
+      assert.are.equal(10, all_marks[1].line)
+    end)
+
+    it("should match marks when the buffer path reaches the repo via a symlink", function()
+      local target = vim.fn.tempname()
+      vim.fn.mkdir(target, "p")
+      local link = vim.fn.tempname()
+      vim.loop.fs_symlink(target, link)
+
+      -- Git returns the symlink-resolved root while the buffer keeps the
+      -- logical (symlinked) path
+      local restore = mock_two_buffers(link .. "/file.lua", "")
+      mock_git_root = vim.fn.resolve(target)
+
+      marks.add_mark(1, 7, "mark via symlink")
+
+      local all_marks = marks.get_marks()
+      assert.are.equal(1, #all_marks)
+      assert.are.equal(link .. "/file.lua", all_marks[1].file)
+
+      restore()
+      vim.fn.delete(link)
+      vim.fn.delete(target, "rf")
     end)
   end)
 end)

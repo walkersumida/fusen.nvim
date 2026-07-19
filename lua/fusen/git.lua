@@ -85,6 +85,20 @@ function M.setup_autocmds()
     end,
   })
 
+  -- Invalidate the cache when the working directory changes (:cd/:lcd/:tcd),
+  -- so project-scoped views don't filter against the previous project's root
+  vim.api.nvim_create_autocmd("DirChanged", {
+    group = group,
+    callback = function()
+      branch_cache.last_check = 0
+
+      local fusen = require("fusen")
+      if fusen.refresh_marks then
+        fusen.refresh_marks()
+      end
+    end,
+  })
+
   -- FocusGained: only refresh if branch actually changed
   vim.api.nvim_create_autocmd("FocusGained", {
     group = group,
