@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.0](https://github.com/walkersumida/fusen.nvim/compare/v0.9.0...v0.10.0) (2026-07-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* requires Neovim 0.8+ (uses vim.fs.normalize)
+
+### Bug Fixes
+
+* scope mark list and yank to current project ([#33](https://github.com/walkersumida/fusen.nvim/issues/33)) ([8fe941f](https://github.com/walkersumida/fusen.nvim/commit/8fe941fbfa27b5aee2e219f9251b8db96deb776d))
+* use nvim_win_text_height for exact float height ([#31](https://github.com/walkersumida/fusen.nvim/issues/31)) ([bfb7de8](https://github.com/walkersumida/fusen.nvim/commit/bfb7de8213387a40a0db4cae202ef49662274492))
+
 ## [0.9.0](https://github.com/walkersumida/fusen.nvim/compare/v0.8.0...v0.9.0) (2026-07-12)
 
 
