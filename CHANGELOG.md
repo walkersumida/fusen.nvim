@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/walkersumida/fusen.nvim/compare/v0.10.0...v0.10.1) (2026-07-22)
+
+
+### Bug Fixes
+
+* match telescope mark filtering against displayed text ([#34](https://github.com/walkersumida/fusen.nvim/issues/34)) ([307f8f8](https://github.com/walkersumida/fusen.nvim/commit/307f8f8e43202f1054f97655dd10b31892c51c58))
+
 ## [0.10.0](https://github.com/walkersumida/fusen.nvim/compare/v0.9.0...v0.10.0) (2026-07-19)
 
 
