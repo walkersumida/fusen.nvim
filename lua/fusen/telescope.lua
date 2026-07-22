@@ -4,6 +4,13 @@ local function telescope_available()
   return pcall(require, "telescope")
 end
 
+-- Telescope matches typed queries against this string, not the displayed
+-- row, so it must contain the same text the picker shows
+-- (annotation first, then relative path).
+function M.make_ordinal(mark)
+  return string.format("%s %s:%d", mark.annotation or "", vim.fn.fnamemodify(mark.file, ":."), mark.line)
+end
+
 function M.marks_picker(opts)
   if not telescope_available() then
     vim.notify("Telescope is not installed", vim.log.levels.WARN)
@@ -66,7 +73,7 @@ function M.marks_picker(opts)
           return {
             value = mark,
             display = make_display,
-            ordinal = string.format("%s:%d %s", mark.file, mark.line, mark.annotation or ""),
+            ordinal = M.make_ordinal(mark),
             filename = mark.file,
             lnum = mark.line,
             col = 1,
